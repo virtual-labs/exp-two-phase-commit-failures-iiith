@@ -1,13 +1,72 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-	<!-- Add CSS at the head of HTML file -->
-    <link rel="stylesheet" href="./css/main.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Two-Phase Commit Simulator</title>
+	<link rel="stylesheet" href="./css/main.css">
 </head>
 <body>
-		<!-- Your code goes here-->
+  <div id="app">
+    <!-- Control Panel -->
+    <div id="control-panel">
+      <h2>Controls</h2>
+      <button id="startBtn">Start Transaction</button>
+      <button id="resetBtn">Reset Simulation</button>
 
-	<!-- Add JS at the bottom of HTML file --> 
-        <script src="./js/main.js"></script>
+      <div class="control-group">
+        <label for="voteTimeout">Vote Timeout (ms)</label>
+        <input type="range" id="voteTimeout" min="500" max="10000" step="500" value="5000" />
+        <span id="voteTimeoutVal">5000</span>
+      </div>
+
+      <div class="control-group">
+        <label for="decisionTimeout">Decision Timeout (ms)</label>
+        <input type="range" id="decisionTimeout" min="500" max="10000" step="500" value="5000" />
+        <span id="decisionTimeoutVal">5000</span>
+      </div>
+
+      <!-- <div class="control-group"> -->
+        <!-- <label for="clockSpeed">Clock Speed</label> -->
+        <!-- <select id="clockSpeed"> -->
+          <!-- <option value="1">1x</option> -->
+          <!-- <option value="0.5">0.5x</option> -->
+          <!-- <option value="0.25">0.25x</option> -->
+        <!-- </select> -->
+      <!-- </div> -->
+
+      <div class="control-group">
+        <label for="scenario">Scenario</label>
+        <select id="scenario">
+          <option value="0" data-goal="" data-allowed="" data-task="">No target</option>
+          <option value="1" data-goal="Force global ABORT by crashing one participant before it votes." data-allowed="1x participant crash" data-task="Crash exactly one participant (e.g. P₂) after C's PREPARE but before P₂ sends VOTE_COMMIT. Watch C timeout → GLOBAL_ABORT.">Single Participant Crash</option>
+          <option value="2" data-goal="Force ABORT by dropping a vote." data-allowed="1x link-down (vote path)" data-task="Break the link between C and one participant after PREPARE so that that P’s VOTE_COMMIT is lost. C must abort." disabled>Dropped Vote Message</option>
+          <!-- <option value="3" data-goal="Force ABORT by crashing C." data-allowed="1x coordinator crash" data-task="Crash C immediately after sending PREPARE but before ANY vote arrives. Upon C’s recovery (or timeout), verify GLOBAL_ABORT." disabled>Coordinator Crash Pre-Vote</option> -->
+        </select>
+      </div>
+      <div id="scenario-panel">
+        <div id="scenario-goal"></div>
+        <div id="scenario-allowed"></div>
+        <div id="scenario-task"></div>
+      </div>
+    </div>
+
+    <!-- Canvas -->
+    <div id="canvas-container">
+      <canvas id="simCanvas" width="800" height="600"></canvas>
+    </div>
+
+    <!-- State & Log Panel -->
+    <div id="log-panel">
+      <h2>State & Log</h2>
+      <div id="state-panel">
+        <!-- Dynamically populated node states -->
+      </div>
+      <pre id="log-output"></pre>
+    </div>
+  </div>
+
+  <!-- Simulation Script -->
+  <script src="./js/main.js"></script>
 </body>
 </html>

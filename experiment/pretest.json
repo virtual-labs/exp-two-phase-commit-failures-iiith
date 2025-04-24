@@ -2,38 +2,123 @@
   "version": 2.0,
   "questions": [
     {
-      "question": "This is a Sample Question 1?",
+      "question": "What is the main goal of the Two-Phase Commit (2PC) protocol?",
       "answers": {
-        "a": "answer1",
-        "b": "answer2",
-        "c": "answer3",
-        "d": "answer4"
+        "a": "Maximize throughput by parallelizing commits",
+        "b": "Ensure durability of local transactions only",
+        "c": "Guarantee atomic commit or abort across all participants",
+        "d": "Provide non-blocking consensus in all failure cases"
       },
       "explanations": {
-        "a": "Explanation 1  <a href='www.google.com'>here</a>",
-        "b": "Explanation 2",
-        "c": "Explanation 2",
-        "d": "Explanation 2"
+        "a": "Incorrect. 2PC focuses on atomicity, not throughput.",
+        "b": "Incorrect. 2PC coordinates across multiple nodes, not just local durability.",
+        "c": "Correct. 2PC ensures that either all nodes commit or all abort.",
+        "d": "Incorrect. 2PC can block if the coordinator fails mid-protocol."
+      },
+      "correctAnswer": "c",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "Which two phases make up the Two-Phase Commit protocol?",
+      "answers": {
+        "a": "Prepare and Commit/Abort",
+        "b": "Lock and Unlock",
+        "c": "Begin and End",
+        "d": "Vote and Ack"
+      },
+      "explanations": {
+        "a": "Correct. Phase 1 is Prepare (voting), Phase 2 is Commit/Abort (decision).",
+        "b": "Incorrect. Lock/Unlock are operations, not the 2PC phases.",
+        "c": "Incorrect. Begin/End aren’t the standard names for 2PC phases.",
+        "d": "Partially correct but not precise: Phase 1 is vote, Phase 2 is decision (commit/abort), not just ack."
       },
       "correctAnswer": "a",
       "difficulty": "beginner"
     },
     {
-      "question": "This is a Sample Question 2?",
+      "question": "What durable log entry does a participant write before replying VOTE_COMMIT?",
       "answers": {
-        "a": "answer1",
-        "b": "answer2",
-        "c": "answer3",
-        "d": "answer4"
+        "a": "INIT",
+        "b": "READY",
+        "c": "COMMIT",
+        "d": "ABORT"
       },
       "explanations": {
-        "a": "Explanation 1  <a href='www.google.com'>here</a>",
-        "b": "Explanation 2",
-        "c": "Explanation 2",
-        "d": "Explanation 2"
+        "a": "Incorrect. INIT is initial state.",
+        "b": "Correct. Participants log READY before voting commit.",
+        "c": "Incorrect. COMMIT is logged after the global decision.",
+        "d": "Incorrect. ABORT is logged after an abort decision."
+      },
+      "correctAnswer": "b",
+      "difficulty": "intermediate"
+    },
+    {
+      "question": "If a participant crashes after logging READY but before receiving GLOBAL_DECISION, what must it do on recovery?",
+      "answers": {
+        "a": "Unilaterally abort the transaction",
+        "b": "Unilaterally commit the transaction",
+        "c": "Query the coordinator for the global decision",
+        "d": "Start a new transaction"
+      },
+      "explanations": {
+        "a": "Incorrect. It cannot decide alone at READY state.",
+        "b": "Incorrect. It cannot decide alone at READY state.",
+        "c": "Correct. It must ask the coordinator for commit/abort.",
+        "d": "Incorrect. It should complete the existing transaction first."
       },
       "correctAnswer": "c",
-      "difficulty": "beginner"
+      "difficulty": "intermediate"
+    },
+    {
+      "question": "What happens if the coordinator crashes after sending some but not all GLOBAL_COMMIT messages?",
+      "answers": {
+        "a": "Only the nodes that received it commit, others abort",
+        "b": "Protocol deadlocks permanently",
+        "c": "On recovery, coordinator re-sends the decision to stragglers",
+        "d": "Participants that didn’t get it commit by default"
+      },
+      "explanations": {
+        "a": "Incorrect. 2PC re-synchronizes on recovery to maintain atomicity.",
+        "b": "Incorrect. 2PC can recover when coordinator comes back.",
+        "c": "Correct. The recovered coordinator re-broadcasts its decision.",
+        "d": "Incorrect. No default commit—participants block until they hear."
+      },
+      "correctAnswer": "c",
+      "difficulty": "advanced"
+    },
+    {
+      "question": "Which of the following is a known drawback of Two-Phase Commit?",
+      "answers": {
+        "a": "It never aborts even on failures",
+        "b": "It can block if the coordinator fails mid-protocol",
+        "c": "It provides no atomicity guarantees",
+        "d": "It requires quadratic message complexity"
+      },
+      "explanations": {
+        "a": "Incorrect. 2PC can and does abort on timeouts or negative votes.",
+        "b": "Correct. Participants in READY state block until coordinator recovers.",
+        "c": "Incorrect. Atomicity is its primary guarantee.",
+        "d": "Incorrect. Message complexity is linear in number of participants per phase."
+      },
+      "correctAnswer": "b",
+      "difficulty": "intermediate"
+    },
+    {
+      "question": "What optimization to 2PC reduces logging overhead by assuming abort if no commit record exists?",
+      "answers": {
+        "a": "Presumed Commit",
+        "b": "Presumed Abort",
+        "c": "Three-Phase Commit",
+        "d": "Two-Phase Locking"
+      },
+      "explanations": {
+        "a": "Incorrect. Presumed Commit assumes commit by default.",
+        "b": "Correct. Presumed Abort skips logging aborts, treating missing log as abort.",
+        "c": "Incorrect. 3PC is a different protocol to avoid blocking.",
+        "d": "Incorrect. Two-Phase Locking is a concurrency control method."
+      },
+      "correctAnswer": "b",
+      "difficulty": "advanced"
     }
   ]
 }

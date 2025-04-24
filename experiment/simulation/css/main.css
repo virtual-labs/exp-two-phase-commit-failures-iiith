@@ -1,1 +1,97 @@
-/* You CSS goes in here */
+/* Layout */
+body, html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: Arial, sans-serif;
+  display: flex;
+  flex-direction: column;
+}
+#app {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+#control-panel, #log-panel {
+  width: 250px;
+  padding: 10px;
+  box-sizing: border-box;
+  background: #f4f4f4;
+  border-right: 1px solid #ccc;
+  display: flex;
+  flex-direction: column;
+}
+#log-panel, #scenario-panel {
+  border-left: 1px solid #ccc;
+  border-right: none;
+}
+#canvas-container {
+  flex: 1;
+  position: relative;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+canvas {
+  background: #eef;
+  border: 1px solid #333;
+}
+
+/* Controls */
+#control-panel h2, #log-panel h2 {
+  margin-top: 0;
+  font-size: 1.2em;
+  text-align: center;
+}
+.control-group {
+  margin: 10px 0;
+  display: flex;
+  flex-direction: column;
+}
+.control-group label {
+  font-size: 0.9em;
+  margin-bottom: 4px;
+}
+.control-group input[type=range], .control-group select {
+  width: 100%;
+}
+.control-group span {
+  font-size: 0.9em;
+  text-align: right;
+  display: block;
+}
+button {
+  padding: 8px;
+  margin: 5px 0;
+  cursor: pointer;
+  border: 1px solid #666;
+  background: #ddd;
+  font-size: 1em;
+}
+button:hover {
+  background: #ccc;
+}
+
+/* Log & State */
+#state-panel {
+  flex: 0 0 auto;
+  margin-bottom: 10px;
+}
+.node-state {
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 0;
+  border-bottom: 1px solid #eee;
+  font-size: 0.9em;
+}
+#log-output, #scenario-goal, #scenario-allowed, #scenario-task {
+  flex: 1;
+  overflow-y: auto;
+  background: #fff;
+  border: 1px solid #ccc;
+  padding: 5px;
+  font-family: monospace;
+  font-size: 0.85em;
+  line-height: 1.2em;
+}

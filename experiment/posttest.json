@@ -2,38 +2,55 @@
   "version": 2.0,
   "questions": [
     {
-      "question": "This is a Sample Question 1?",
+      "question": "When you dropped a single VOTE_COMMIT message by breaking a link, what decision did the coordinator make and why?",
       "answers": {
-        "a": "answer1",
-        "b": "answer2",
-        "c": "answer3",
-        "d": "answer4"
+        "a": "GLOBAL_COMMIT, because all participants were READY",
+        "b": "GLOBAL_ABORT, because a vote was missing after timeout",
+        "c": "GLOBAL_COMMIT, because missing votes default to commit",
+        "d": "It blocked indefinitely, waiting for the missing vote"
       },
       "explanations": {
-        "a": "Explanation 1  <a href='www.google.com'>here</a>",
-        "b": "Explanation 2",
-        "c": "Explanation 2",
-        "d": "Explanation 2"
+        "a": "Incorrect. READY alone isn’t enough; the coordinator only commits if it actually hears every vote.",
+        "b": "Correct. The coordinator timed out waiting for that vote and aborted.",
+        "c": "Incorrect. Missing votes cause abort, not presumed commit.",
+        "d": "Incorrect. The coordinator times out and makes an abort decision."
       },
-      "correctAnswer": "a",
-      "difficulty": "beginner"
+      "correctAnswer": "b",
+      "difficulty": "intermediate"
     },
     {
-      "question": "This is a Sample Question 2?",
+      "question": "Why is durable logging of the ‘READY’ state essential for a participant that crashes before the global decision?",
       "answers": {
-        "a": "answer1",
-        "b": "answer2",
-        "c": "answer3",
-        "d": "answer4"
+        "a": "So it can vote again in a new transaction",
+        "b": "So it knows to re-send PREPARE on recovery",
+        "c": "So it can query the coordinator for the correct decision upon recovery",
+        "d": "So it commits immediately on restart"
       },
       "explanations": {
-        "a": "Explanation 1  <a href='www.google.com'>here</a>",
-        "b": "Explanation 2",
-        "c": "Explanation 2",
-        "d": "Explanation 2"
+        "a": "Incorrect. It does not re-vote for the same transaction.",
+        "b": "Incorrect. PREPARE is sent by the coordinator, not participants.",
+        "c": "Correct. Logging READY tells the participant it must ask for the global outcome.",
+        "d": "Incorrect. It cannot unilaterally commit without hearing the global decision."
       },
       "correctAnswer": "c",
-      "difficulty": "beginner"
+      "difficulty": "intermediate"
+    },
+    {
+      "question": "In the ‘Coordinator Crash’ scenario, what mechanism guarantees all participants eventually see the same decision?",
+      "answers": {
+        "a": "Participants gossip amongst themselves",
+        "b": "Coordinator re-broadcasts its decision on recovery",
+        "c": "Participants abort if they miss any message",
+        "d": "Coordinator logs nothing until every ACK arrives"
+      },
+      "explanations": {
+        "a": "Incorrect. There is no peer-to-peer gossip in basic 2PC.",
+        "b": "Correct. On recovery the coordinator reads its log and re-sends GLOBAL_COMMIT or GLOBAL_ABORT.",
+        "c": "Incorrect. Participants wait for the decision rather than unilaterally aborting.",
+        "d": "Incorrect. The coordinator logs the decision before sending global messages."
+      },
+      "correctAnswer": "b",
+      "difficulty": "advanced"
     }
   ]
 }
