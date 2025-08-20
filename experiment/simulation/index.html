@@ -3,75 +3,824 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>2-Phase Commit Protocol Simulation</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Two-Phase Commit Protocol Simulation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #1a202c;
+            overflow: hidden;
+        }
+
+        .app-container {
+            display: grid;
+            grid-template-columns: 320px 1fr 350px;
+            grid-template-rows: 1fr;
+            height: 100vh;
+            max-width: 1800px;
+            margin: 0 auto;
+            gap: 15px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+            overflow: hidden;
+        }
+
+        .header {
+            grid-column: 1 / -1;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+            color: white;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(66, 153, 225, 0.3);
+        }
+
+        .header h1 {
+            font-size: 2em;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #48bb78;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.1); }
+        }
+
+        .controls-panel {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow-y: auto;
+            height: calc(100vh - 110px);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .controls-panel::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .controls-panel::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 3px;
+        }
+
+        .controls-panel::-webkit-scrollbar-thumb {
+            background: #4299e1;
+            border-radius: 3px;
+        }
+
+        .experiment-area {
+            position: relative;
+            overflow: hidden;
+            border-radius: 15px;
+            background: radial-gradient(circle at 50% 50%, #f8fafc 0%, #e2e8f0 100%);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .observations-panel {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow-y: auto;
+            height: calc(100vh - 110px);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .observations-panel::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .observations-panel::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 3px;
+        }
+
+        .observations-panel::-webkit-scrollbar-thumb {
+            background: #4299e1;
+            border-radius: 3px;
+        }
+
+        .control-section {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+
+        .control-section h3 {
+            color: #2d3748;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .control-section h3::before {
+            content: '⚙️';
+            font-size: 1.2em;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #374151;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6, #1e40af);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+        }
+
+        .simulation-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            overflow: hidden;
+            position: relative;
+            min-height: 500px;
+        }
+
+        .connection-lines {
+            pointer-events: none;
+        }
+
+        .connection-lines {
+            pointer-events: none;
+        }
+
+        .connection-line {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            stroke-dasharray: 5,5;
+            stroke-dashoffset: 0;
+        }
+
+        .connection-line.active {
+            opacity: 1 !important;
+            stroke-width: 3;
+            filter: url(#glow);
+            animation: dash 2s linear infinite;
+        }
+
+        .connection-line.return-line {
+            stroke-dasharray: 3,3;
+        }
+
+        .connection-line.failed {
+            stroke: #ef4444;
+            opacity: 0.6;
+            stroke-dasharray: 2,8;
+            animation: connectionFailed 1.5s ease-in-out;
+        }
+
+        .connection-line.broken {
+            stroke: #ef4444;
+            opacity: 0.8;
+            stroke-dasharray: 5,5;
+            animation: brokenConnection 2s linear infinite;
+        }
+
+        .connection-line.timeout {
+            stroke: #f59e0b;
+            opacity: 0.7;
+            stroke-dasharray: 10,5;
+            animation: timeoutPulse 1s ease-in-out infinite;
+        }
+
+        @keyframes connectionFailed {
+            0% { opacity: 1; stroke-width: 3; }
+            50% { opacity: 0.2; stroke-width: 1; }
+            100% { opacity: 0.6; stroke-width: 2; }
+        }
+
+        @keyframes brokenConnection {
+            0% { stroke-dashoffset: 0; opacity: 0.8; }
+            50% { opacity: 0.3; }
+            100% { stroke-dashoffset: -30; opacity: 0.8; }
+        }
+
+        @keyframes timeoutPulse {
+            0%, 100% { opacity: 0.4; }
+            50% { opacity: 0.9; }
+        }
+
+        @keyframes dash {
+            to {
+                stroke-dashoffset: -20;
+            }
+        }
+
+        .connection-line.active {
+            opacity: 1 !important;
+            stroke-width: 3;
+            filter: url(#glow);
+            animation: dash 2s linear infinite;
+        }
+
+        .connection-line.return-line {
+            stroke-dasharray: 3,3;
+        }
+
+        .connection-line.failed {
+            stroke: #ef4444;
+            opacity: 0.6;
+            stroke-dasharray: 2,8;
+            animation: connectionFailed 1.5s ease-in-out;
+        }
+
+        .connection-line.broken {
+            stroke: #ef4444;
+            opacity: 0.8;
+            stroke-dasharray: 5,5;
+            animation: brokenConnection 2s linear infinite;
+        }
+
+        .connection-line.timeout {
+            stroke: #f59e0b;
+            opacity: 0.7;
+            stroke-dasharray: 10,5;
+            animation: timeoutPulse 1s ease-in-out infinite;
+        }
+
+        @keyframes connectionFailed {
+            0% { opacity: 1; stroke-width: 3; }
+            50% { opacity: 0.2; stroke-width: 1; }
+            100% { opacity: 0.6; stroke-width: 2; }
+        }
+
+        @keyframes brokenConnection {
+            0% { stroke-dashoffset: 0; opacity: 0.8; }
+            50% { opacity: 0.3; }
+            100% { stroke-dashoffset: -30; opacity: 0.8; }
+        }
+
+        @keyframes timeoutPulse {
+            0%, 100% { opacity: 0.4; }
+            50% { opacity: 0.9; }
+        }
+
+        @keyframes dash {
+            to {
+                stroke-dashoffset: -20;
+            }
+        }
+
+        .node {
+            position: absolute;
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .coordinator {
+            background: linear-gradient(135deg, #3182ce 0%, #2c5282 100%);
+            color: white;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 120px;
+            height: 120px;
+            font-size: 0.9rem;
+            border: 4px solid white;
+            box-shadow: 0 8px 20px rgba(49, 130, 206, 0.3);
+            z-index: 10;
+        }
+
+        .participant {
+            background: linear-gradient(135deg, #63b3ed 0%, #4299e1 100%);
+            color: white;
+            border: 3px solid white;
+            box-shadow: 0 6px 15px rgba(66, 153, 225, 0.3);
+        }
+
+        .participant1 { 
+            position: absolute;
+            top: 200px; 
+            left: 20%; 
+        }
+        .participant2 { 
+            position: absolute;
+            top: 350px; 
+            left: 20%; 
+        }
+        .participant3 { 
+            position: absolute;
+            top: 200px; 
+            right: 20%; 
+        }
+        .participant4 { 
+            position: absolute;
+            top: 350px; 
+            right: 20%; 
+        }
+
+        .participant.active {
+            transform: scale(1.2);
+        }
+
+        .coordinator {
+            background: linear-gradient(135deg, #3182ce 0%, #2c5282 100%);
+            color: white;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 120px;
+            height: 120px;
+            font-size: 0.9rem;
+            border: 4px solid white;
+            box-shadow: 0 8px 20px rgba(49, 130, 206, 0.3);
+            z-index: 10;
+            position: absolute;
+        }
+
+        .coordinator.active {
+            transform: translate(-50%, -50%) scale(1.2) !important;
+            animation: coordinatorPulse 1.5s ease-in-out !important;
+        }
+
+        /* Prevent any node.active rules from affecting coordinator */
+        .node.coordinator.active {
+            transform: translate(-50%, -50%) scale(1.2) !important;
+        }
+
+        @keyframes coordinatorPulse {
+            0%, 100% { 
+                transform: translate(-50%, -50%) scale(1.2) !important; 
+                box-shadow: 0 8px 20px rgba(49, 130, 206, 0.3); 
+            }
+            50% { 
+                transform: translate(-50%, -50%) scale(1.3) !important; 
+                box-shadow: 0 12px 30px rgba(49, 130, 206, 0.5); 
+            }
+        }
+
+        .participant.active {
+            transform: scale(1.2);
+        }
+
+        .participant.failed {
+            background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
+            animation: shake 0.5s;
+        }
+
+        .participant.voted-yes {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+        }
+
+        .participant.voted-no {
+            background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
+        }
+
+        .participant.committed {
+            background: linear-gradient(135deg, #68d391 0%, #48bb78 100%);
+            animation: success 0.8s;
+        }
+
+        .participant.aborted {
+            background: linear-gradient(135deg, #fed7d7 0%, #feb2b2 100%);
+            color: #742a2a;
+        }
+
+        .node.failed {
+            background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
+            color: white;
+            animation: shake 0.5s;
+        }
+
+        .node.prepared {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            color: white;
+        }
+
+        .node.committed {
+            background: linear-gradient(135deg, #68d391 0%, #48bb78 100%);
+            color: white;
+            animation: success 0.8s;
+        }
+
+        .node.aborted {
+            background: linear-gradient(135deg, #fed7d7 0%, #feb2b2 100%);
+            color: #742a2a;
+        }
+
+        .node.in-doubt {
+            background: linear-gradient(135deg, #3182ce, #4299e1);
+            color: white;
+            animation: blink 1.5s infinite;
+        }
+
+        .node.blocked {
+            background: linear-gradient(135deg, #ef4444, #f56565);
+            color: white;
+            animation: shake 0.5s infinite;
+        }
+
+        .node.recovering {
+            background: linear-gradient(135deg, #3182ce, #4299e1);
+            color: white;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0.3; }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-2px); }
+            75% { transform: translateX(2px); }
+        }
+
+        @keyframes success {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+        }
+
+        .message {
+            position: absolute;
+            background: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            animation: messageFlow 2s ease-in-out;
+            z-index: 20;
+            border: 2px solid #3182ce;
+            color: #2d3748;
+        }
+
+        @keyframes messageFlow {
+            0% { opacity: 0; transform: scale(0.8); }
+            20% { opacity: 1; transform: scale(1); }
+            80% { opacity: 1; transform: scale(1); }
+            100% { opacity: 0; transform: scale(0.8); }
+        }
+
+        .message.failed {
+            background: linear-gradient(135deg, #ef4444, #f56565) !important;
+            animation: messageFailure 2s ease-in-out;
+        }
+
+        .message.timeout {
+            background: linear-gradient(135deg, #f59e0b, #ed8936) !important;
+            animation: messageTimeout 3s ease-in-out;
+        }
+
+        .communication-block {
+            position: absolute;
+            background: rgba(239, 68, 68, 0.95);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            z-index: 150;
+            animation: blockAlert 2s ease-in-out;
+            border: 2px solid #ef4444;
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+        }
+
+        @keyframes messageFailure {
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.3; transform: scale(0.8); }
+            75% { opacity: 0.1; transform: scale(0.6); }
+            100% { opacity: 0; transform: scale(0.3); }
+        }
+
+        @keyframes messageTimeout {
+            0% { opacity: 1; transform: scale(1); }
+            25% { opacity: 0.8; transform: scale(1.1); }
+            50% { opacity: 0.4; transform: scale(0.9); }
+            75% { opacity: 0.2; transform: scale(0.7); }
+            100% { opacity: 0; transform: scale(0.5); }
+        }
+
+        @keyframes blockAlert {
+            0% { opacity: 0; transform: scale(0.5); }
+            50% { opacity: 1; transform: scale(1.1); }
+            100% { opacity: 0.9; transform: scale(1); }
+        }
+
+        .status-section {
+            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+            border-radius: 12px;
+            padding: 15px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .status-section h4 {
+            color: #2d3748;
+            margin-bottom: 12px;
+            font-size: 1em;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-section h4::before {
+            content: '📊';
+            font-size: 1.1em;
+        }
+
+        .logs {
+            height: 400px;
+            overflow-y: auto;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.8rem;
+            line-height: 1.4;
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            border: 1px solid #e2e8f0;
+            box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .log-entry {
+            margin: 4px 0;
+            padding: 6px 10px;
+            border-radius: 6px;
+            background: #f8fafc;
+            border-left: 3px solid #94a3b8;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        .log-entry.info {
+            border-left-color: #3b82f6;
+            background: #eff6ff;
+            color: #2563eb;
+        }
+
+        .log-entry.success {
+            border-left-color: #10b981;
+            background: #f0fdf4;
+            color: #059669;
+        }
+
+        .log-entry.error {
+            border-left-color: #ef4444;
+            background: #fef2f2;
+            color: #dc2626;
+        }
+
+        .log-entry.warning {
+            border-left-color: #f59e0b;
+            background: #fffbeb;
+            color: #d97706;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .status-item {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 0.875rem;
+            color: #2d3748;
+        }
+
+        .status-item:last-child {
+            border-bottom: none;
+        }
+
+        .legend-panel {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+            z-index: 10;
+            min-width: 200px;
+        }
+
+        .legend-panel h4 {
+            color: #2d3748;
+            margin-bottom: 12px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .legend-panel h4::before {
+            content: '🔍';
+            font-size: 1em;
+        }
+
+        .legend-items {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.8rem;
+            color: #4a5568;
+        }
+
+        .legend-color {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            border: 1px solid #e2e8f0;
+        }
+
+        .phase-indicator {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            color: #2d3748;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+            font-size: 0.9rem;
+            z-index: 10;
+        }
+
+        @media (max-width: 1200px) {
+            .app-container {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto auto auto;
+                height: 100vh;
+                gap: 10px;
+                padding: 10px;
+            }
+            
+            .controls-panel {
+                height: 300px;
+                order: 2;
+            }
+            
+            .experiment-area {
+                order: 1;
+                min-height: 400px;
+            }
+            
+            .observations-panel {
+                height: 250px;
+                order: 3;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .node {
+                width: 50px;
+                height: 50px;
+                font-size: 0.65rem;
+            }
+            
+            .participant1 { top: 150px; left: 10%; }
+            .participant2 { top: 250px; left: 10%; }
+            .participant3 { top: 150px; right: 10%; }
+            .participant4 { top: 250px; right: 10%; }
+            
+            .phase-indicator {
+                min-width: 250px;
+                font-size: 0.875rem;
+                padding: 0.5rem;
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="app-container">
-        <header class="header">
-            <h1>
-                🔄 2-Phase Commit Protocol
-                <div class="status-indicator"></div>
-            </h1>
-            <div style="font-size: 0.9em; opacity: 0.9;">
-                Distributed Transaction Simulation
-            </div>
-        </header>
-
         <div class="controls-panel">
             <div class="control-section">
-                <h3>Transaction Configuration</h3>
-                <div class="input-group">
-                    <label>Number of Participants</label>
-                    <select id="participantCount">
-                        <option value="3">3 Participants</option>
-                        <option value="4">4 Participants</option>
-                        <option value="5">5 Participants</option>
-                        <option value="6">6 Participants</option>
-                    </select>
-                </div>
-                <div class="input-group">
-                    <label>Failure Scenario</label>
-                    <select id="failureMode">
-                        <option value="none">No Failures</option>
-                        <option value="coordinator_phase1">Coordinator Fails (Phase 1)</option>
-                        <option value="coordinator_phase2">Coordinator Fails (Phase 2)</option>
-                        <option value="participant_phase1">Participant Fails (Phase 1)</option>
-                        <option value="participant_phase2">Participant Fails (Phase 2)</option>
-                        <option value="network_partition">Network Partition</option>
-                        <option value="timeout">Transaction Timeout</option>
-                    </select>
-                </div>
+                <h3>Transaction Control</h3>
+                <button class="btn btn-primary" onclick="startTransaction()">Start New Transaction</button>
+                <button class="btn btn-secondary" onclick="nextStep()" id="nextBtn" disabled>Next Step</button>
+                <button class="btn btn-danger" onclick="resetSimulation()">Reset Simulation</button>
             </div>
 
             <div class="control-section">
-                <h3>Actions & Controls</h3>
-                <div class="input-group">
-                    <label>Animation Speed</label>
-                    <div class="control-row">
-                        <input type="range" id="animationSpeed" min="0.25" max="3" step="0.25" value="1" style="flex: 1; height: 8px; background: #e2e8f0; border-radius: 4px; outline: none; -webkit-appearance: none; appearance: none; cursor: pointer;">
-                        <div id="speedValue" style="min-width: 40px; text-align: center; color: #1e40af; font-weight: 600; font-size: 0.9rem; background: white; border-radius: 6px; padding: 4px 8px; border: 1px solid #e2e8f0;">1x</div>
-                    </div>
-                </div>
-                <div class="input-group">
-                    <label>Simulation Mode</label>
-                    <select id="simulationMode">
-                        <option value="manual">Step-by-step (Manual)</option>
-                        <option value="automatic">Automatic</option>
-                    </select>
-                </div>
+                <h3>Failure Simulation</h3>
+                <button class="btn btn-danger" onclick="simulateParticipantFailurePhase1()">Participant Failure (Phase 1)</button>
+                <button class="btn btn-danger" onclick="simulateCoordinatorFailurePhase1()">Coordinator Failure (Phase 1)</button>
+                <button class="btn btn-danger" onclick="simulateParticipantFailurePhase2()">Participant Failure (Phase 2)</button>
+                <button class="btn btn-danger" onclick="simulateCoordinatorFailurePhase2()">Coordinator Failure (Phase 2)</button>
+                <button class="btn btn-primary" onclick="simulateRecovery()">Simulate Recovery</button>
+            </div>
 
-                <!-- Manual Controls -->
-                <div id="manualControls">
-                    <button id="nextStepBtn" class="btn btn-primary">➡️ Next Step</button>
+            <div class="control-section">
+                <h3>Protocol Overview</h3>
+                <div style="font-size: 0.8rem; color: #4a5568; line-height: 1.4;">
+                    <p><strong>Phase 1 (Prepare):</strong> Coordinator sends PREPARE to all participants</p>
+                    <p><strong>Phase 2 (Commit/Abort):</strong> Based on votes, coordinator sends final decision</p>
+                    <p><strong>ACID Properties:</strong> Ensures atomicity across distributed databases</p>
                 </div>
-
-                <!-- Automatic Controls -->
-                <div id="automaticControls" style="display: none;">
-                    <button id="runAutoBtn" class="btn btn-secondary">▶️ Run Simulation</button>
-                </div>
-                
-                <button id="resetSimulation" class="btn btn-danger">🔄 Reset Simulation</button>
             </div>
         </div>
 
@@ -102,14 +851,57 @@
                         </div>
                     </div>
                 </div>
-                <div id="phaseIndicator" class="phase-indicator">Ready</div>
-                <div class="coordinator" id="coordinator">
-                    Coordinator
+                <!-- SVG for connection lines -->
+                <svg class="connection-lines" width="100%" height="100%" style="position: absolute; top: 0; left: 0; z-index: 1;">
+                    <defs>
+                        <marker id="arrowhead" markerWidth="10" markerHeight="7" 
+                                refX="9" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#3182ce" opacity="0.6"/>
+                        </marker>
+                        <filter id="glow">
+                            <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                            <feMerge> 
+                                <feMergeNode in="coloredBlur"/>
+                                <feMergeNode in="SourceGraphic"/>
+                            </feMerge>
+                        </filter>
+                    </defs>
+                    
+                    <!-- Lines from coordinator to participants -->
+                    <line id="line-coord-p1" class="connection-line" stroke="#667eea" stroke-width="2" opacity="0.4" marker-end="url(#arrowhead)"></line>
+                    <line id="line-coord-p2" class="connection-line" stroke="#667eea" stroke-width="2" opacity="0.4" marker-end="url(#arrowhead)"></line>
+                    <line id="line-coord-p3" class="connection-line" stroke="#667eea" stroke-width="2" opacity="0.4" marker-end="url(#arrowhead)"></line>
+                    <line id="line-coord-p4" class="connection-line" stroke="#667eea" stroke-width="2" opacity="0.4" marker-end="url(#arrowhead)"></line>
+                    
+                    <!-- Lines from participants to coordinator (for return messages) -->
+                    <line id="line-p1-coord" class="connection-line return-line" stroke="#10b981" stroke-width="2" opacity="0.4" marker-end="url(#arrowhead)"></line>
+                    <line id="line-p2-coord" class="connection-line return-line" stroke="#10b981" stroke-width="2" opacity="0.4" marker-end="url(#arrowhead)"></line>
+                    <line id="line-p3-coord" class="connection-line return-line" stroke="#10b981" stroke-width="2" opacity="0.4" marker-end="url(#arrowhead)"></line>
+                    <line id="line-p4-coord" class="connection-line return-line" stroke="#10b981" stroke-width="2" opacity="0.4" marker-end="url(#arrowhead)"></line>
+                </svg>
+
+                <!-- Coordinator -->
+                <div class="node coordinator" id="coordinator">
+                    <div>Coordinator</div>
                 </div>
-                <div class="participants" id="participants"></div>
-                <div class="message-lines" id="messageLines"></div>
-                <div class="failure-overlay" id="failureOverlay">
-                    System Failure Detected!
+
+                <!-- Participants -->
+                <div class="node participant participant1" id="participant1">
+                    <div>P1</div>
+                </div>
+                <div class="node participant participant2" id="participant2">
+                    <div>P2</div>
+                </div>
+                <div class="node participant participant3" id="participant3">
+                    <div>P3</div>
+                </div>
+                <div class="node participant participant4" id="participant4">
+                    <div>P4</div>
+                </div>
+
+                <!-- Phase Indicator -->
+                <div class="phase-indicator" id="phaseIndicator">
+                    Ready to Start Transaction
                 </div>
             </div>
         </div>
@@ -117,49 +909,890 @@
         <div class="observations-panel">
             <div class="status-section">
                 <h4>Transaction Log</h4>
-                <div class="logs" id="logContainer">
-                    <div class="log-entry info">[System] 2-Phase Commit Protocol initialized</div>
-                    <div class="log-entry info">[Info] Click 'Start Transaction' to begin distributed transaction</div>
-                </div>
-            </div>
-
-            <div class="status-section">
-                <h4>Transaction Statistics</h4>
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-value" id="successCount">0</div>
-                        <div class="stat-label">Successful Commits</div>
-                        <div class="stat-description">Transactions completed</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value" id="abortCount">0</div>
-                        <div class="stat-label">Aborted Transactions</div>
-                        <div class="stat-description">Transactions rolled back</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value" id="failureCount">0</div>
-                        <div class="stat-label">System Failures</div>
-                        <div class="stat-description">Node/network failures</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value" id="totalTransactions">0</div>
-                        <div class="stat-label">Total Transactions</div>
-                        <div class="stat-description">All attempts</div>
-                    </div>
+                <div class="logs" id="logPanel">
+                    <div class="log-entry info">System ready for transactions</div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="tooltip" id="tooltip"></div>
+    <script>
+        let currentStep = 0;
+        let transactionState = 'idle';
+        let participantStates = {};
+        let coordinatorState = 'idle';
+        let failedNodes = new Set();
+        let inDoubtNodes = new Set();
+        let blockedNodes = new Set();
+        let steps = [];
+        let currentPhase = 0; // 0: idle, 1: prepare phase, 2: commit phase
+        let transactionLog = [];
+        let coordinatorLog = { decision: null, participantResponses: {} };
 
-    <!-- Mobile Portrait Orientation Overlay -->
-    <div class="rotate-device-overlay">
-        <div class="rotate-icon">📱➡️📲</div>
-        <h2>Please Rotate Your Device</h2>
-        <p>For the best experience, please rotate your device to landscape mode to view this distributed systems simulation.</p>
-    </div>
+        function initializeSimulation() {
+            participantStates = {
+                participant1: 'idle',
+                participant2: 'idle',
+                participant3: 'idle',
+                participant4: 'idle'
+            };
+            coordinatorState = 'idle';
+            failedNodes.clear();
+            inDoubtNodes.clear();
+            blockedNodes.clear();
+            currentStep = 0;
+            currentPhase = 0;
+            steps = [];
+            transactionLog = [];
+            coordinatorLog = { decision: null, participantResponses: {} };
+            
+            // Initialize connection lines
+            setTimeout(() => {
+                updateConnectionLines();
+            }, 100);
+            
+            updateUI();
+        }
 
-    <script src="script.js"></script>
+        function updateConnectionLines() {
+            const coordinator = document.getElementById('coordinator');
+            const participants = ['participant1', 'participant2', 'participant3', 'participant4'];
+            
+            if (!coordinator) return;
+            
+            const coordRect = coordinator.getBoundingClientRect();
+            const containerRect = document.querySelector('.simulation-area').getBoundingClientRect();
+            
+            const coordCenterX = coordRect.left - containerRect.left + coordRect.width / 2;
+            const coordCenterY = coordRect.top - containerRect.top + coordRect.height / 2;
+            
+            participants.forEach((participantId, index) => {
+                const participant = document.getElementById(participantId);
+                if (!participant) return;
+                
+                const partRect = participant.getBoundingClientRect();
+                const partCenterX = partRect.left - containerRect.left + partRect.width / 2;
+                const partCenterY = partRect.top - containerRect.top + partRect.height / 2;
+                
+                // Line from coordinator to participant
+                const lineToParticipant = document.getElementById(`line-coord-p${index + 1}`);
+                if (lineToParticipant) {
+                    lineToParticipant.setAttribute('x1', coordCenterX);
+                    lineToParticipant.setAttribute('y1', coordCenterY);
+                    lineToParticipant.setAttribute('x2', partCenterX);
+                    lineToParticipant.setAttribute('y2', partCenterY);
+                }
+                
+                // Line from participant to coordinator (slightly offset for visibility)
+                const lineToCoordinator = document.getElementById(`line-p${index + 1}-coord`);
+                if (lineToCoordinator) {
+                    const offsetX = (partCenterX - coordCenterX) * 0.1;
+                    const offsetY = (partCenterY - coordCenterY) * 0.1;
+                    
+                    lineToCoordinator.setAttribute('x1', partCenterX - offsetX);
+                    lineToCoordinator.setAttribute('y1', partCenterY - offsetY);
+                    lineToCoordinator.setAttribute('x2', coordCenterX + offsetX);
+                    lineToCoordinator.setAttribute('y2', coordCenterY + offsetY);
+                }
+            });
+        }
+
+        function startTransaction() {
+            if (transactionState !== 'idle') return;
+            
+            transactionState = 'active';
+            currentStep = 0;
+            currentPhase = 1;
+            
+            // Define the transaction steps
+            steps = [
+                { phase: 'Phase 1: Voting Phase', action: 'prepare', description: 'Coordinator sends PREPARE to all participants' },
+                { phase: 'Phase 1: Voting Phase', action: 'vote1', description: 'Participant 1 votes YES and enters PREPARED state' },
+                { phase: 'Phase 1: Voting Phase', action: 'vote2', description: 'Participant 2 votes YES and enters PREPARED state' },
+                { phase: 'Phase 1: Voting Phase', action: 'vote3', description: 'Participant 3 votes YES and enters PREPARED state' },
+                { phase: 'Phase 1: Voting Phase', action: 'vote4', description: 'Participant 4 votes YES and enters PREPARED state' },
+                { phase: 'Phase 2: Decision Phase', action: 'decision', description: 'All votes YES - Coordinator decides COMMIT and logs decision' },
+                { phase: 'Phase 2: Decision Phase', action: 'commit', description: 'Coordinator sends COMMIT to all participants' },
+                { phase: 'Phase 2: Decision Phase', action: 'ack', description: 'Participants acknowledge commitment and release locks' }
+            ];
+
+            document.getElementById('nextBtn').disabled = false;
+            document.querySelector('.neu-button.purple').disabled = true;
+            addLog('🚀 New transaction started - Phase 1 begins');
+            logTransaction('Transaction started');
+            updatePhaseIndicator(steps[0].phase);
+        }
+
+        function nextStep() {
+            if (currentStep >= steps.length) return;
+
+            const step = steps[currentStep];
+            executeStep(step);
+            currentStep++;
+
+            if (currentStep >= steps.length) {
+                document.getElementById('nextBtn').disabled = true;
+                transactionState = 'completed';
+                addLog('✅ Transaction completed successfully');
+                logTransaction('Transaction completed successfully');
+            }
+        }
+
+        function executeStep(step) {
+            updatePhaseIndicator(step.phase);
+            addLog(`📤 ${step.description}`);
+            logTransaction(step.description);
+
+            if (step.phase.includes('Phase 2')) {
+                currentPhase = 2;
+            }
+
+            switch(step.action) {
+                case 'prepare':
+                    highlightCoordinator();
+                    sendMessageToAll('PREPARE');
+                    setTimeout(() => {
+                        Object.keys(participantStates).forEach(p => {
+                            if (!failedNodes.has(p)) {
+                                participantStates[p] = 'prepared';
+                                document.getElementById(p).classList.add('prepared');
+                                addLog(`🔄 ${p} is now in PREPARED state (holding locks)`);
+                            }
+                        });
+                    }, 1000);
+                    break;
+
+                case 'vote1':
+                case 'vote2':
+                case 'vote3':
+                case 'vote4':
+                    const participantNum = step.action.slice(-1);
+                    const participantId = `participant${participantNum}`;
+                    if (!failedNodes.has(participantId)) {
+                        highlightParticipant(participantId);
+                        sendMessage(participantId, 'coordinator', 'YES');
+                        coordinatorLog.participantResponses[participantId] = 'YES';
+                        addLog(`✅ ${participantId} votes YES - prepared to commit`);
+                    } else {
+                        addLog(`❌ ${participantId} failed - no response (coordinator will timeout)`);
+                        coordinatorLog.participantResponses[participantId] = 'NO_RESPONSE';
+                    }
+                    break;
+
+                case 'decision':
+                    highlightCoordinator();
+                    coordinatorState = 'committing';
+                    coordinatorLog.decision = 'COMMIT';
+                    addLog('📝 Coordinator logs COMMIT decision');
+                    break;
+
+                case 'commit':
+                    currentPhase = 2;
+                    sendMessageToAll('COMMIT');
+                    setTimeout(() => {
+                        Object.keys(participantStates).forEach(p => {
+                            if (!failedNodes.has(p)) {
+                                participantStates[p] = 'committed';
+                                document.getElementById(p).classList.remove('prepared', 'in-doubt');
+                                document.getElementById(p).classList.add('committed');
+                                addLog(`💾 ${p} commits transaction and releases locks`);
+                            }
+                        });
+                    }, 1000);
+                    break;
+
+                case 'ack':
+                    Object.keys(participantStates).forEach(p => {
+                        if (!failedNodes.has(p)) {
+                            sendMessage(p, 'coordinator', 'COMMITTED');
+                        }
+                    });
+                    setTimeout(() => {
+                        document.getElementById('coordinator').classList.add('committed');
+                        coordinatorState = 'committed';
+                        addLog('🎉 All participants acknowledged - transaction complete');
+                    }, 1500);
+                    break;
+            }
+        }
+
+        // Enhanced Failure Scenarios
+
+        function simulateParticipantFailurePhase1() {
+            if (currentPhase !== 1) {
+                addLog('⚠️ This failure can only occur during Phase 1 (Prepare Phase)');
+                return;
+            }
+
+            const participants = ['participant1', 'participant2', 'participant3', 'participant4'];
+            const randomParticipant = participants[Math.floor(Math.random() * participants.length)];
+            
+            if (!failedNodes.has(randomParticipant)) {
+                // Show communication attempt first
+                addLog(`📤 Coordinator sending PREPARE to ${randomParticipant}...`);
+                showMessageFailure('coordinator', randomParticipant, 'PREPARE');
+                
+                setTimeout(() => {
+                    failedNodes.add(randomParticipant);
+                    document.getElementById(randomParticipant).classList.add('failed');
+                    showCommunicationBlock(randomParticipant, 'NODE FAILURE');
+                    markConnectionsAsBroken('coordinator', randomParticipant);
+                    
+                    addLog(`💥 ${randomParticipant.toUpperCase()} FAILS during message transmission!`);
+                    addLog(`📡 Communication with ${randomParticipant} is now BROKEN`);
+                    addLog(`⏱️ Coordinator will timeout waiting for ${randomParticipant} response`);
+                    
+                    setTimeout(() => {
+                        addLog(`⏰ TIMEOUT: No response from ${randomParticipant} after 30 seconds`);
+                        addLog(`⛔ Coordinator decides to ABORT entire transaction`);
+                        
+                        // Modify steps to show abort scenario
+                        steps = steps.slice(0, currentStep).concat([
+                            { phase: 'Phase 2: Abort Phase', action: 'abort_decision', description: 'Coordinator decides ABORT due to participant failure' },
+                            { phase: 'Phase 2: Abort Phase', action: 'rollback', description: 'Coordinator sends ROLLBACK to all prepared participants' },
+                            { phase: 'Recovery Phase', action: 'recovery_inquiry', description: `${randomParticipant} will inquire about transaction status upon recovery` }
+                        ]);
+
+                        coordinatorLog.decision = 'ABORT';
+                        coordinatorLog.participantResponses[randomParticipant] = 'FAILED';
+                        
+                        setTimeout(() => {
+                            sendAbortToAllPrepared();
+                        }, 1000);
+                    }, 3000);
+                }, 1500);
+            }
+        }
+
+        function simulateCoordinatorFailurePhase1() {
+            if (currentPhase !== 1) {
+                addLog('⚠️ This failure can only occur during Phase 1 (Prepare Phase)');
+                return;
+            }
+
+            // Show communication attempts before failure
+            addLog('📤 Participants attempting to send votes to coordinator...');
+            Object.keys(participantStates).forEach((p, index) => {
+                if (participantStates[p] === 'prepared') {
+                    setTimeout(() => {
+                        showMessageTimeout(p, 'coordinator', 'YES');
+                    }, index * 500);
+                }
+            });
+
+            setTimeout(() => {
+                failedNodes.add('coordinator');
+                document.getElementById('coordinator').classList.add('failed');
+                showCommunicationBlock('coordinator', 'COORDINATOR DOWN');
+                markAllCoordinatorConnectionsAsBroken();
+                
+                addLog('💥 COORDINATOR FAILS - All communication LOST!');
+                addLog('📡 All participant-to-coordinator communication BROKEN');
+                addLog('🔒 Prepared participants enter IN-DOUBT state (holding locks)');
+                addLog('⏳ Participants will timeout waiting for coordinator decision');
+                
+                // Mark all prepared participants as in-doubt
+                Object.keys(participantStates).forEach(p => {
+                    if (participantStates[p] === 'prepared') {
+                        inDoubtNodes.add(p);
+                        document.getElementById(p).classList.remove('prepared');
+                        document.getElementById(p).classList.add('in-doubt');
+                        addLog(`🤔 ${p} enters IN-DOUBT state - cannot proceed`);
+                    }
+                });
+
+                // Modify steps for recovery scenario
+                steps = steps.slice(0, currentStep).concat([
+                    { phase: 'Recovery Phase', action: 'coordinator_recovery', description: 'Coordinator recovery - consulting transaction log' },
+                    { phase: 'Recovery Phase', action: 'resolve_doubt', description: 'Coordinator resolves in-doubt participants' }
+                ]);
+            }, 2500);
+        }
+
+        function simulateParticipantFailurePhase2() {
+            if (currentPhase !== 2) {
+                addLog('⚠️ This failure can only occur during Phase 2 (Commit Phase)');
+                return;
+            }
+
+            const participants = ['participant1', 'participant2', 'participant3', 'participant4'];
+            const committedParticipants = participants.filter(p => 
+                participantStates[p] === 'committed' || participantStates[p] === 'prepared'
+            );
+            
+            if (committedParticipants.length === 0) return;
+            
+            const randomParticipant = committedParticipants[Math.floor(Math.random() * committedParticipants.length)];
+            
+            failedNodes.add(randomParticipant);
+            document.getElementById(randomParticipant).classList.add('failed');
+            updateLineStates();
+            
+            addLog(`💥 ${randomParticipant.toUpperCase()} FAILS during Commit Phase!`);
+            addLog(`📝 ${randomParticipant} received COMMIT but failed before completing`);
+            addLog(`🔄 Upon recovery, ${randomParticipant} must complete the commit`);
+            addLog(`👆 Coordinator assumes ${randomParticipant} will eventually commit`);
+            
+            // Add recovery step
+            steps.push({ 
+                phase: 'Recovery Phase', 
+                action: 'participant_recovery', 
+                description: `${randomParticipant} recovers and completes commit operation` 
+            });
+        }
+
+        function simulateCoordinatorFailurePhase2() {
+            if (currentPhase !== 2) {
+                addLog('⚠️ This failure can only occur during Phase 2 (Commit Phase)');
+                return;
+            }
+
+            // Show partial message delivery before failure
+            addLog('📤 Coordinator sending COMMIT messages...');
+            const participants = ['participant1', 'participant2', 'participant3', 'participant4'];
+            const receivedCommit = [];
+            const stillInDoubt = [];
+            
+            // Randomly decide which participants got the commit message
+            participants.forEach((p, index) => {
+                if (!failedNodes.has(p)) {
+                    setTimeout(() => {
+                        if (Math.random() < 0.5) { // 50% chance they received commit
+                            receivedCommit.push(p);
+                            sendMessage('coordinator', p, 'COMMIT');
+                            setTimeout(() => {
+                                participantStates[p] = 'committed';
+                                document.getElementById(p).classList.remove('prepared', 'in-doubt');
+                                document.getElementById(p).classList.add('committed');
+                                addLog(`✅ ${p} received COMMIT and committed successfully`);
+                            }, 1000);
+                        } else {
+                            stillInDoubt.push(p);
+                            showMessageFailure('coordinator', p, 'COMMIT');
+                            setTimeout(() => {
+                                inDoubtNodes.add(p);
+                                blockedNodes.add(p);
+                                document.getElementById(p).classList.remove('prepared');
+                                document.getElementById(p).classList.add('blocked');
+                                addLog(`🚫 ${p} never received COMMIT - communication LOST!`);
+                            }, 1500);
+                        }
+                    }, index * 400);
+                }
+            });
+
+            setTimeout(() => {
+                failedNodes.add('coordinator');
+                document.getElementById('coordinator').classList.add('failed');
+                showCommunicationBlock('coordinator', 'CRITICAL FAILURE');
+                markAllCoordinatorConnectionsAsBroken();
+                
+                addLog('💥 COORDINATOR FAILS during Commit Phase - MOST PROBLEMATIC!');
+                addLog('📡 All remaining communication channels SEVERED!');
+                addLog('⚠️ Some participants committed, others never received the message');
+                
+                if (stillInDoubt.length > 0) {
+                    setTimeout(() => {
+                        addLog('💀 CRITICAL: Some participants are BLOCKED holding locks!');
+                        addLog('🔒 These participants cannot proceed without coordinator recovery');
+                        addLog('⚰️ If coordinator fails permanently, these locks may never be released');
+                        addLog('🚨 DATABASE CONSISTENCY IS NOW AT RISK!');
+                    }, 1000);
+                }
+
+                // Add recovery steps
+                steps = steps.slice(0, currentStep).concat([
+                    { phase: 'Recovery Phase', action: 'coordinator_recovery_phase2', description: 'Coordinator recovery - checking transaction log' },
+                    { phase: 'Recovery Phase', action: 'resolve_blocked', description: 'Coordinator resolves blocked participants' }
+                ]);
+            }, 2000);
+        }
+
+        function simulateRecovery() {
+            if (failedNodes.size === 0) {
+                addLog('⚠️ No failed nodes to recover');
+                return;
+            }
+
+            addLog('🔄 Starting recovery procedures...');
+            
+            failedNodes.forEach(nodeId => {
+                if (nodeId === 'coordinator') {
+                    recoverCoordinator();
+                } else {
+                    recoverParticipant(nodeId);
+                }
+            });
+        }
+
+        function recoverCoordinator() {
+            addLog('🏥 COORDINATOR RECOVERY: Consulting transaction log...');
+            
+            setTimeout(() => {
+                document.getElementById('coordinator').classList.remove('failed');
+                document.getElementById('coordinator').classList.add('recovering');
+                
+                if (coordinatorLog.decision) {
+                    addLog(`📖 Log shows decision: ${coordinatorLog.decision}`);
+                    
+                    if (coordinatorLog.decision === 'COMMIT') {
+                        addLog('📤 Sending delayed COMMIT messages to in-doubt participants');
+                        resolveInDoubtParticipants('commit');
+                    } else if (coordinatorLog.decision === 'ABORT') {
+                        addLog('📤 Sending delayed ABORT messages to in-doubt participants');
+                        resolveInDoubtParticipants('abort');
+                    }
+                } else {
+                    addLog('📝 No decision in log - coordinator decides to ABORT for safety');
+                    coordinatorLog.decision = 'ABORT';
+                    resolveInDoubtParticipants('abort');
+                }
+                
+                setTimeout(() => {
+                    document.getElementById('coordinator').classList.remove('recovering');
+                    failedNodes.delete('coordinator');
+                    addLog('✅ Coordinator recovery complete');
+                }, 2000);
+            }, 1000);
+        }
+
+        function recoverParticipant(participantId) {
+            addLog(`🏥 ${participantId.toUpperCase()} RECOVERY: Inquiring about transaction status...`);
+            
+            setTimeout(() => {
+                document.getElementById(participantId).classList.remove('failed');
+                document.getElementById(participantId).classList.add('recovering');
+                
+                if (coordinatorLog.decision === 'COMMIT') {
+                    addLog(`📖 ${participantId} learns transaction was COMMITTED`);
+                    participantStates[participantId] = 'committed';
+                    document.getElementById(participantId).classList.remove('recovering');
+                    document.getElementById(participantId).classList.add('committed');
+                    addLog(`💾 ${participantId} completes delayed commit operation`);
+                } else if (coordinatorLog.decision === 'ABORT') {
+                    addLog(`📖 ${participantId} learns transaction was ABORTED`);
+                    participantStates[participantId] = 'aborted';
+                    document.getElementById(participantId).classList.remove('recovering');
+                    document.getElementById(participantId).classList.add('aborted');
+                    addLog(`🗑️ ${participantId} rolls back local changes`);
+                } else {
+                    addLog(`❓ ${participantId} cannot determine transaction status - remains uncertain`);
+                }
+                
+                failedNodes.delete(participantId);
+            }, 1000);
+        }
+
+        function resolveInDoubtParticipants(decision) {
+            inDoubtNodes.forEach(participantId => {
+                if (decision === 'commit') {
+                    participantStates[participantId] = 'committed';
+                    document.getElementById(participantId).classList.remove('in-doubt', 'blocked');
+                    document.getElementById(participantId).classList.add('committed');
+                    sendMessage('coordinator', participantId, 'COMMIT');
+                    addLog(`🔓 ${participantId} receives delayed COMMIT - releases locks`);
+                } else {
+                    participantStates[participantId] = 'aborted';
+                    document.getElementById(participantId).classList.remove('in-doubt', 'blocked');
+                    document.getElementById(participantId).classList.add('aborted');
+                    sendMessage('coordinator', participantId, 'ABORT');
+                    addLog(`🔓 ${participantId} receives ABORT - rolls back and releases locks`);
+                }
+            });
+            
+            inDoubtNodes.clear();
+            blockedNodes.clear();
+        }
+
+        function sendAbortToAllPrepared() {
+            Object.keys(participantStates).forEach(p => {
+                if (participantStates[p] === 'prepared' && !failedNodes.has(p)) {
+                    participantStates[p] = 'aborted';
+                    document.getElementById(p).classList.remove('prepared');
+                    document.getElementById(p).classList.add('aborted');
+                    sendMessage('coordinator', p, 'ROLLBACK');
+                    addLog(`🔄 ${p} receives ROLLBACK - rolls back and releases locks`);
+                }
+            });
+        }
+
+        function highlightCoordinator() {
+            const coordinator = document.getElementById('coordinator');
+            if (!coordinator.classList.contains('failed')) {
+                coordinator.classList.add('active');
+                setTimeout(() => {
+                    coordinator.classList.remove('active');
+                }, 1500);
+            }
+        }
+
+        function highlightParticipant(participantId) {
+            const participant = document.getElementById(participantId);
+            if (!participant.classList.contains('failed')) {
+                participant.classList.add('active');
+                setTimeout(() => {
+                    participant.classList.remove('active');
+                }, 1500);
+            }
+        }
+
+        function sendMessage(from, to, message) {
+            const fromEl = document.getElementById(from);
+            const toEl = document.getElementById(to);
+            
+            if (!fromEl || !toEl || failedNodes.has(from) || failedNodes.has(to)) return;
+            
+            // Highlight the connection line
+            highlightConnectionLine(from, to);
+            
+            const fromRect = fromEl.getBoundingClientRect();
+            const toRect = toEl.getBoundingClientRect();
+            const container = document.querySelector('.simulation-area').getBoundingClientRect();
+            
+            const messageEl = document.createElement('div');
+            messageEl.className = 'message';
+            messageEl.textContent = message;
+            
+            // Set message color based on type
+            if (message === 'PREPARE') messageEl.style.background = '#0ea5e9';
+            else if (message === 'YES' || message === 'COMMITTED') messageEl.style.background = '#059669';
+            else if (message === 'COMMIT') messageEl.style.background = '#0891b2';
+            else if (message === 'ROLLBACK' || message === 'ABORT') messageEl.style.background = '#dc2626';
+            
+            const startX = fromRect.left - container.left + fromRect.width / 2;
+            const startY = fromRect.top - container.top + fromRect.height / 2;
+            const endX = toRect.left - container.left + toRect.width / 2;
+            const endY = toRect.top - container.top + toRect.height / 2;
+            
+            messageEl.style.left = startX + 'px';
+            messageEl.style.top = startY + 'px';
+            messageEl.style.transform = 'translate(-50%, -50%)';
+            
+            document.querySelector('.simulation-area').appendChild(messageEl);
+            
+            // Animate message movement along the line
+            setTimeout(() => {
+                messageEl.style.transition = 'all 1.5s cubic-bezier(0.4, 0, 0.2, 1)';
+                messageEl.style.left = endX + 'px';
+                messageEl.style.top = endY + 'px';
+            }, 100);
+            
+            setTimeout(() => {
+                messageEl.remove();
+            }, 2000);
+        }
+
+        function showMessageFailure(from, to, message) {
+            const fromEl = document.getElementById(from);
+            const toEl = document.getElementById(to);
+            
+            if (!fromEl || !toEl) return;
+            
+            // Mark connection as broken
+            markConnectionsAsBroken(from, to);
+            
+            const fromRect = fromEl.getBoundingClientRect();
+            const container = document.querySelector('.simulation-area').getBoundingClientRect();
+            
+            const messageEl = document.createElement('div');
+            messageEl.className = 'message failed';
+            messageEl.textContent = message + ' ✗';
+            
+            const startX = fromRect.left - container.left + fromRect.width / 2;
+            const startY = fromRect.top - container.top + fromRect.height / 2;
+            
+            messageEl.style.left = startX + 'px';
+            messageEl.style.top = startY + 'px';
+            messageEl.style.transform = 'translate(-50%, -50%)';
+            
+            document.querySelector('.simulation-area').appendChild(messageEl);
+            
+            // Message fails partway through
+            setTimeout(() => {
+                messageEl.style.transition = 'all 1s cubic-bezier(0.4, 0, 0.2, 1)';
+                messageEl.style.left = (startX + (fromRect.left - container.left + fromRect.width)) / 2 + 'px';
+                messageEl.style.opacity = '0.3';
+            }, 100);
+            
+            setTimeout(() => {
+                messageEl.remove();
+            }, 2500);
+        }
+
+        function showMessageTimeout(from, to, message) {
+            const fromEl = document.getElementById(from);
+            const toEl = document.getElementById(to);
+            
+            if (!fromEl || !toEl) return;
+            
+            // Mark connection as timeout
+            markConnectionAsTimeout(from, to);
+            
+            const fromRect = fromEl.getBoundingClientRect();
+            const toRect = toEl.getBoundingClientRect();
+            const container = document.querySelector('.simulation-area').getBoundingClientRect();
+            
+            const messageEl = document.createElement('div');
+            messageEl.className = 'message timeout';
+            messageEl.textContent = message + ' ⏰';
+            
+            const startX = fromRect.left - container.left + fromRect.width / 2;
+            const startY = fromRect.top - container.top + fromRect.height / 2;
+            const endX = toRect.left - container.left + toRect.width / 2;
+            const endY = toRect.top - container.top + toRect.height / 2;
+            
+            messageEl.style.left = startX + 'px';
+            messageEl.style.top = startY + 'px';
+            messageEl.style.transform = 'translate(-50%, -50%)';
+            
+            document.querySelector('.simulation-area').appendChild(messageEl);
+            
+            // Message moves slowly then times out
+            setTimeout(() => {
+                messageEl.style.transition = 'all 3s cubic-bezier(0.4, 0, 0.2, 1)';
+                messageEl.style.left = (startX + endX) / 2 + 'px';
+                messageEl.style.top = (startY + endY) / 2 + 'px';
+            }, 100);
+            
+            setTimeout(() => {
+                messageEl.remove();
+            }, 3500);
+        }
+
+        function showCommunicationBlock(nodeId, reason) {
+            const nodeEl = document.getElementById(nodeId);
+            if (!nodeEl) return;
+            
+            const nodeRect = nodeEl.getBoundingClientRect();
+            const container = document.querySelector('.simulation-area').getBoundingClientRect();
+            
+            const blockEl = document.createElement('div');
+            blockEl.className = 'communication-block';
+            blockEl.textContent = reason;
+            
+            const nodeX = nodeRect.left - container.left + nodeRect.width / 2;
+            const nodeY = nodeRect.top - container.top + nodeRect.height + 10;
+            
+            blockEl.style.left = nodeX + 'px';
+            blockEl.style.top = nodeY + 'px';
+            blockEl.style.transform = 'translateX(-50%)';
+            
+            document.querySelector('.simulation-area').appendChild(blockEl);
+            
+            setTimeout(() => {
+                if (blockEl.parentNode) {
+                    blockEl.remove();
+                }
+            }, 5000);
+        }
+
+        function markConnectionsAsBroken(from, to) {
+            let lineId = '';
+            
+            if (from === 'coordinator') {
+                const participantNum = to.slice(-1);
+                lineId = `line-coord-p${participantNum}`;
+            } else if (to === 'coordinator') {
+                const participantNum = from.slice(-1);
+                lineId = `line-p${participantNum}-coord`;
+            }
+            
+            const line = document.getElementById(lineId);
+            if (line) {
+                line.classList.remove('active', 'timeout');
+                line.classList.add('broken');
+            }
+
+            // Also mark the return line
+            if (from === 'coordinator') {
+                const returnLineId = `line-p${to.slice(-1)}-coord`;
+                const returnLine = document.getElementById(returnLineId);
+                if (returnLine) {
+                    returnLine.classList.remove('active', 'timeout');
+                    returnLine.classList.add('broken');
+                }
+            } else if (to === 'coordinator') {
+                const returnLineId = `line-coord-p${from.slice(-1)}`;
+                const returnLine = document.getElementById(returnLineId);
+                if (returnLine) {
+                    returnLine.classList.remove('active', 'timeout');
+                    returnLine.classList.add('broken');
+                }
+            }
+        }
+
+        function markConnectionAsTimeout(from, to) {
+            let lineId = '';
+            
+            if (from === 'coordinator') {
+                const participantNum = to.slice(-1);
+                lineId = `line-coord-p${participantNum}`;
+            } else if (to === 'coordinator') {
+                const participantNum = from.slice(-1);
+                lineId = `line-p${participantNum}-coord`;
+            }
+            
+            const line = document.getElementById(lineId);
+            if (line) {
+                line.classList.remove('active');
+                line.classList.add('timeout');
+            }
+        }
+
+        function markAllCoordinatorConnectionsAsBroken() {
+            const participants = ['participant1', 'participant2', 'participant3', 'participant4'];
+            
+            participants.forEach((participantId, index) => {
+                const lineToParticipant = document.getElementById(`line-coord-p${index + 1}`);
+                const lineToCoordinator = document.getElementById(`line-p${index + 1}-coord`);
+                
+                if (lineToParticipant) {
+                    lineToParticipant.classList.remove('active', 'timeout');
+                    lineToParticipant.classList.add('broken');
+                }
+                if (lineToCoordinator) {
+                    lineToCoordinator.classList.remove('active', 'timeout');
+                    lineToCoordinator.classList.add('broken');
+                }
+            });
+        }
+
+        function highlightConnectionLine(from, to) {
+            let lineId = '';
+            
+            if (from === 'coordinator') {
+                const participantNum = to.slice(-1);
+                lineId = `line-coord-p${participantNum}`;
+            } else if (to === 'coordinator') {
+                const participantNum = from.slice(-1);
+                lineId = `line-p${participantNum}-coord`;
+            }
+            
+            const line = document.getElementById(lineId);
+            if (line) {
+                line.classList.add('active');
+                
+                // Remove highlight after animation
+                setTimeout(() => {
+                    line.classList.remove('active');
+                }, 2000);
+            }
+        }
+
+        function updateLineStates() {
+            // Update line appearance based on node states
+            const participants = ['participant1', 'participant2', 'participant3', 'participant4'];
+            
+            participants.forEach((participantId, index) => {
+                const lineToParticipant = document.getElementById(`line-coord-p${index + 1}`);
+                const lineToCoordinator = document.getElementById(`line-p${index + 1}-coord`);
+                
+                if (failedNodes.has(participantId) || failedNodes.has('coordinator')) {
+                    if (lineToParticipant && !lineToParticipant.classList.contains('broken')) {
+                        lineToParticipant.classList.add('failed');
+                    }
+                    if (lineToCoordinator && !lineToCoordinator.classList.contains('broken')) {
+                        lineToCoordinator.classList.add('failed');
+                    }
+                } else {
+                    if (lineToParticipant) lineToParticipant.classList.remove('failed', 'broken', 'timeout');
+                    if (lineToCoordinator) lineToCoordinator.classList.remove('failed', 'broken', 'timeout');
+                }
+            });
+        }
+
+        function sendMessageToAll(message) {
+            Object.keys(participantStates).forEach(participantId => {
+                if (!failedNodes.has(participantId) && !failedNodes.has('coordinator')) {
+                    setTimeout(() => sendMessage('coordinator', participantId, message), Math.random() * 500);
+                }
+            });
+        }
+
+        function updatePhaseIndicator(phase) {
+            document.getElementById('phaseIndicator').textContent = phase;
+        }
+
+        function addLog(message) {
+            const logPanel = document.getElementById('logPanel');
+            const logItem = document.createElement('div');
+            logItem.className = 'status-item';
+            logItem.textContent = `${new Date().toLocaleTimeString()}: ${message}`;
+            
+            logPanel.insertBefore(logItem, logPanel.firstChild);
+            
+            // Keep only last 15 log entries
+            while (logPanel.children.length > 15) {
+                logPanel.removeChild(logPanel.lastChild);
+            }
+        }
+
+        function logTransaction(action) {
+            transactionLog.push({
+                timestamp: new Date().toISOString(),
+                action: action,
+                phase: currentPhase
+            });
+        }
+
+        function resetSimulation() {
+            // Reset all visual states
+            document.querySelectorAll('.node').forEach(node => {
+                node.className = node.className.split(' ').filter(c => 
+                    !['active', 'failed', 'prepared', 'committed', 'aborted', 'in-doubt', 'blocked', 'recovering'].includes(c)
+                ).join(' ');
+            });
+            
+            // Reset connection lines
+            document.querySelectorAll('.connection-line').forEach(line => {
+                line.classList.remove('active', 'failed', 'broken', 'timeout');
+            });
+            
+            // Clear messages and communication blocks
+            document.querySelectorAll('.message').forEach(msg => msg.remove());
+            document.querySelectorAll('.communication-block').forEach(block => block.remove());
+            
+            // Reset state
+            initializeSimulation();
+            transactionState = 'idle';
+            
+            // Reset buttons
+            document.getElementById('nextBtn').disabled = true;
+            document.querySelector('.neu-button.purple').disabled = false;
+            
+            // Reset UI
+            updatePhaseIndicator('Ready to Start Transaction');
+            
+            // Clear log
+            document.getElementById('logPanel').innerHTML = '<div class="status-item">System reset - ready for new transaction</div>';
+        }
+
+        // Initialize on page load and handle window resize
+        document.addEventListener('DOMContentLoaded', initializeSimulation);
+        
+        window.addEventListener('resize', () => {
+            setTimeout(updateConnectionLines, 100);
+        });
+
+        // Update lines when nodes change state
+        function updateUI() {
+            // Update participant visual states based on their current state
+            Object.keys(participantStates).forEach(participantId => {
+                const element = document.getElementById(participantId);
+                const state = participantStates[participantId];
+                
+                element.classList.remove('prepared', 'committed', 'aborted', 'in-doubt', 'blocked');
+                if (state === 'prepared') element.classList.add('prepared');
+                else if (state === 'committed') element.classList.add('committed');
+                else if (state === 'aborted') element.classList.add('aborted');
+                
+                if (inDoubtNodes.has(participantId)) element.classList.add('in-doubt');
+                if (blockedNodes.has(participantId)) element.classList.add('blocked');
+            });
+            
+            // Update connection line states
+            updateLineStates();
+        }
+    </script>
 </body>
 </html>
