@@ -1,56 +1,103 @@
 {
-  "version": 2.0,
-  "questions": [
-    {
-      "question": "When you dropped a single VOTE_COMMIT message by breaking a link, what decision did the coordinator make and why?",
-      "answers": {
-        "a": "GLOBAL_COMMIT, because all participants were READY",
-        "b": "GLOBAL_ABORT, because a vote was missing after timeout",
-        "c": "GLOBAL_COMMIT, because missing votes default to commit",
-        "d": "It blocked indefinitely, waiting for the missing vote"
-      },
-      "explanations": {
-        "a": "Incorrect. READY alone isn’t enough; the coordinator only commits if it actually hears every vote.",
-        "b": "Correct. The coordinator timed out waiting for that vote and aborted.",
-        "c": "Incorrect. Missing votes cause abort, not presumed commit.",
-        "d": "Incorrect. The coordinator times out and makes an abort decision."
-      },
-      "correctAnswer": "b",
-      "difficulty": "intermediate"
-    },
-    {
-      "question": "Why is durable logging of the ‘READY’ state essential for a participant that crashes before the global decision?",
-      "answers": {
-        "a": "So it can vote again in a new transaction",
-        "b": "So it knows to re-send PREPARE on recovery",
-        "c": "So it can query the coordinator for the correct decision upon recovery",
-        "d": "So it commits immediately on restart"
-      },
-      "explanations": {
-        "a": "Incorrect. It does not re-vote for the same transaction.",
-        "b": "Incorrect. PREPARE is sent by the coordinator, not participants.",
-        "c": "Correct. Logging READY tells the participant it must ask for the global outcome.",
-        "d": "Incorrect. It cannot unilaterally commit without hearing the global decision."
-      },
-      "correctAnswer": "c",
-      "difficulty": "intermediate"
-    },
-    {
-      "question": "In the ‘Coordinator Crash’ scenario, what mechanism guarantees all participants eventually see the same decision?",
-      "answers": {
-        "a": "Participants gossip amongst themselves",
-        "b": "Coordinator re-broadcasts its decision on recovery",
-        "c": "Participants abort if they miss any message",
-        "d": "Coordinator logs nothing until every ACK arrives"
-      },
-      "explanations": {
-        "a": "Incorrect. There is no peer-to-peer gossip in basic 2PC.",
-        "b": "Correct. On recovery the coordinator reads its log and re-sends GLOBAL_COMMIT or GLOBAL_ABORT.",
-        "c": "Incorrect. Participants wait for the decision rather than unilaterally aborting.",
-        "d": "Incorrect. The coordinator logs the decision before sending global messages."
-      },
-      "correctAnswer": "b",
-      "difficulty": "advanced"
-    }
-  ]
+    "questions": [
+        {
+            "question": "In the simulation, what was the outcome when the coordinator failed during Phase 1 (before sending a decision)?",
+            "options": {
+                "A": "All participants committed.",
+                "B": "All participants aborted.",
+                "C": "Some participants committed and some aborted.",
+                "D": "Participants were blocked until the coordinator recovered."
+            },
+            "answer": "D",
+            "difficulty": "easy"
+        },
+        {
+            "question": "If a participant fails in Phase 1 before voting, what is the final outcome of the transaction?",
+            "options": {
+                "A": "Commit",
+                "B": "Abort",
+                "C": "Depends on other participants",
+                "D": "The protocol is stuck"
+            },
+            "answer": "B",
+            "difficulty": "easy"
+        },
+        {
+            "question": "What does the 'Network Partition' failure scenario demonstrate?",
+            "options": {
+                "A": "How 2PC handles message loss.",
+                "B": "How 2PC works with slow networks.",
+                "C": "How 2PC handles a single node failure.",
+                "D": "How 2PC can lead to inconsistent states."
+            },
+            "answer": "A",
+            "difficulty": "easy"
+        },
+        {
+            "question": "Why is it important for the coordinator to log its decision before sending it to participants?",
+            "options": {
+                "A": "To ensure the decision is not lost if the coordinator crashes.",
+                "B": "To inform the participants about the decision.",
+                "C": "To slow down the protocol for observation.",
+                "D": "It is not important."
+            },
+            "answer": "A",
+            "difficulty": "intermediate"
+        },
+        {
+            "question": "In the 'Participant Fails (Phase 2)' scenario, how does the failed participant determine the transaction outcome after recovery?",
+            "options": {
+                "A": "It assumes abort.",
+                "B": "It asks another participant.",
+                "C": "It checks its own log and contacts the coordinator if necessary.",
+                "D": "It assumes commit."
+            },
+            "answer": "C",
+            "difficulty": "intermediate"
+        },
+        {
+            "question": "What is the role of the 'Transaction Timeout' scenario?",
+            "options": {
+                "A": "To show what happens when a participant is slow to respond.",
+                "B": "To test the coordinator's patience.",
+                "C": "To simulate a complete network failure.",
+                "D": "To ensure all transactions eventually commit."
+            },
+            "answer": "A",
+            "difficulty": "intermediate"
+        },
+        {
+            "question": "Could the 2PC protocol, as simulated, lead to a non-atomic outcome (some commit, some abort) in any of the failure scenarios?",
+            "options": {
+                "A": "Yes, if the coordinator fails at the right time.",
+                "B": "Yes, if a network partition occurs.",
+                "C": "No, the protocol is designed to prevent this, though it may block.",
+                "D": "Yes, if multiple participants fail."
+            },
+            "answer": "C",
+            "difficulty": "advanced"
+        },
+        {
+            "question": "How could the blocking problem of 2PC be mitigated in a real-world system?",
+            "options": {
+                "A": "By using a faster network.",
+                "B": "By having more participants.",
+                "C": "By using a protocol like Paxos to replicate the coordinator.",
+                "D": "By reducing the transaction size."
+            },
+            "answer": "C",
+            "difficulty": "advanced"
+        },
+        {
+            "question": "If you were to design a non-blocking commit protocol, what would be the main difference from 2PC?",
+            "options": {
+                "A": "It would have fewer messages.",
+                "B": "It would not have a coordinator.",
+                "C": "It would introduce a third phase to allow participants to reach a decision without the coordinator.",
+                "D": "It would eliminate the need for logging."
+            },
+            "answer": "C",
+            "difficulty": "advanced"
+        }
+    ]
 }

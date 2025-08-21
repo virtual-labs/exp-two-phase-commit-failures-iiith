@@ -101,7 +101,37 @@ Participants in **READY** cannot unilaterally decide to abort—they risk violat
 - **Scalability**: 2PC’s message complexity is O(N) per phase; for many participants, coordinator becomes a bottleneck.
 - **Coordinator High-Availability**: real systems often replicate the coordinator (e.g., via Paxos) to reduce blocking.
 
-<!-- --- -->
+---
 
-<!-- ## 8. Summary -->
-<!-- Two-Phase Commit provides a simple, widely deployed mechanism for achieving atomic transactions across distributed participants. Through a prepare/vote phase and a commit/abort phase—combined with durable logs, timeouts, and retries—it tolerates crashes and message loss. Its main drawback is potential blocking if the coordinator fails mid-decision, motivating optimizations (presumed protocols) and more advanced non-blocking variants (3PC, consensus-based commits). Understanding 2PC is foundational for designing robust distributed transaction systems. -->
+## 8. Summary
+Two-Phase Commit provides a simple, widely deployed mechanism for achieving atomic transactions across distributed participants. Through a prepare/vote phase and a commit/abort phase—combined with durable logs, timeouts, and retries—it tolerates crashes and message loss. Its main drawback is potential blocking if the coordinator fails mid-decision, motivating optimizations (presumed protocols) and more advanced non-blocking variants (3PC, consensus-based commits). Understanding 2PC is foundational for designing robust distributed transaction systems.
+
+---
+
+# Theory: Two-Phase Commit Protocol
+
+The Two-Phase Commit (2PC) protocol is a distributed algorithm that ensures all participating processes in a distributed transaction either commit or abort. It is a blocking protocol, meaning that a failure of the coordinator can cause participants to block until the coordinator recovers.
+
+The protocol works in two phases:
+
+**Phase 1: Voting Phase**
+
+1.  The coordinator sends a `PREPARE` message to all participants.
+2.  Upon receiving the `PREPARE` message, each participant determines if it can commit the transaction.
+    *   If a participant can commit, it writes a `READY` record to its log and sends a `VOTE_COMMIT` message to the coordinator.
+    *   If a participant cannot commit, it sends a `VOTE_ABORT` message to the coordinator.
+
+**Phase 2: Decision Phase**
+
+1.  The coordinator collects the votes from all participants.
+    *   If the coordinator receives `VOTE_COMMIT` from all participants, it decides to commit the transaction. It writes a `COMMIT` record to its log and sends a `GLOBAL_COMMIT` message to all participants.
+    *   If the coordinator receives at least one `VOTE_ABORT` or if it times out waiting for votes, it decides to abort the transaction. It writes an `ABORT` record to its log and sends a `GLOBAL_ABORT` message to all participants.
+2.  Participants receive the global decision from the coordinator.
+    *   If the message is `GLOBAL_COMMIT`, the participant commits the transaction.
+    *   If the message is `GLOBAL_ABORT`, the participant aborts the transaction.
+3.  After executing the decision, each participant sends an `ACK` message to the coordinator.
+
+**Failure Handling**
+
+*   **Participant Failure:** If a participant fails before voting, the coordinator will time out and abort the transaction. If it fails after voting `VOTE_COMMIT`, it will query the coordinator for the outcome upon recovery.
+*   **Coordinator Failure:** This is the more complex scenario. If the coordinator fails before sending a global decision, participants that voted `VOTE_COMMIT` are blocked and must wait for the coordinator to recover to learn the final outcome. This is the primary drawback of the 2PC protocol.
