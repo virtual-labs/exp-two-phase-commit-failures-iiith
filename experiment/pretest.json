@@ -1,124 +1,103 @@
 {
-  "version": 2.0,
-  "questions": [
-    {
-      "question": "What is the main goal of the Two-Phase Commit (2PC) protocol?",
-      "answers": {
-        "a": "Maximize throughput by parallelizing commits",
-        "b": "Ensure durability of local transactions only",
-        "c": "Guarantee atomic commit or abort across all participants",
-        "d": "Provide non-blocking consensus in all failure cases"
-      },
-      "explanations": {
-        "a": "Incorrect. 2PC focuses on atomicity, not throughput.",
-        "b": "Incorrect. 2PC coordinates across multiple nodes, not just local durability.",
-        "c": "Correct. 2PC ensures that either all nodes commit or all abort.",
-        "d": "Incorrect. 2PC can block if the coordinator fails mid-protocol."
-      },
-      "correctAnswer": "c",
-      "difficulty": "beginner"
-    },
-    {
-      "question": "Which two phases make up the Two-Phase Commit protocol?",
-      "answers": {
-        "a": "Prepare and Commit/Abort",
-        "b": "Lock and Unlock",
-        "c": "Begin and End",
-        "d": "Vote and Ack"
-      },
-      "explanations": {
-        "a": "Correct. Phase 1 is Prepare (voting), Phase 2 is Commit/Abort (decision).",
-        "b": "Incorrect. Lock/Unlock are operations, not the 2PC phases.",
-        "c": "Incorrect. Begin/End aren’t the standard names for 2PC phases.",
-        "d": "Partially correct but not precise: Phase 1 is vote, Phase 2 is decision (commit/abort), not just ack."
-      },
-      "correctAnswer": "a",
-      "difficulty": "beginner"
-    },
-    {
-      "question": "What durable log entry does a participant write before replying VOTE_COMMIT?",
-      "answers": {
-        "a": "INIT",
-        "b": "READY",
-        "c": "COMMIT",
-        "d": "ABORT"
-      },
-      "explanations": {
-        "a": "Incorrect. INIT is initial state.",
-        "b": "Correct. Participants log READY before voting commit.",
-        "c": "Incorrect. COMMIT is logged after the global decision.",
-        "d": "Incorrect. ABORT is logged after an abort decision."
-      },
-      "correctAnswer": "b",
-      "difficulty": "intermediate"
-    },
-    {
-      "question": "If a participant crashes after logging READY but before receiving GLOBAL_DECISION, what must it do on recovery?",
-      "answers": {
-        "a": "Unilaterally abort the transaction",
-        "b": "Unilaterally commit the transaction",
-        "c": "Query the coordinator for the global decision",
-        "d": "Start a new transaction"
-      },
-      "explanations": {
-        "a": "Incorrect. It cannot decide alone at READY state.",
-        "b": "Incorrect. It cannot decide alone at READY state.",
-        "c": "Correct. It must ask the coordinator for commit/abort.",
-        "d": "Incorrect. It should complete the existing transaction first."
-      },
-      "correctAnswer": "c",
-      "difficulty": "intermediate"
-    },
-    {
-      "question": "What happens if the coordinator crashes after sending some but not all GLOBAL_COMMIT messages?",
-      "answers": {
-        "a": "Only the nodes that received it commit, others abort",
-        "b": "Protocol deadlocks permanently",
-        "c": "On recovery, coordinator re-sends the decision to stragglers",
-        "d": "Participants that didn’t get it commit by default"
-      },
-      "explanations": {
-        "a": "Incorrect. 2PC re-synchronizes on recovery to maintain atomicity.",
-        "b": "Incorrect. 2PC can recover when coordinator comes back.",
-        "c": "Correct. The recovered coordinator re-broadcasts its decision.",
-        "d": "Incorrect. No default commit—participants block until they hear."
-      },
-      "correctAnswer": "c",
-      "difficulty": "advanced"
-    },
-    {
-      "question": "Which of the following is a known drawback of Two-Phase Commit?",
-      "answers": {
-        "a": "It never aborts even on failures",
-        "b": "It can block if the coordinator fails mid-protocol",
-        "c": "It provides no atomicity guarantees",
-        "d": "It requires quadratic message complexity"
-      },
-      "explanations": {
-        "a": "Incorrect. 2PC can and does abort on timeouts or negative votes.",
-        "b": "Correct. Participants in READY state block until coordinator recovers.",
-        "c": "Incorrect. Atomicity is its primary guarantee.",
-        "d": "Incorrect. Message complexity is linear in number of participants per phase."
-      },
-      "correctAnswer": "b",
-      "difficulty": "intermediate"
-    },
-    {
-      "question": "What optimization to 2PC reduces logging overhead by assuming abort if no commit record exists?",
-      "answers": {
-        "a": "Presumed Commit",
-        "b": "Presumed Abort",
-        "c": "Three-Phase Commit",
-        "d": "Two-Phase Locking"
-      },
-      "explanations": {
-        "a": "Incorrect. Presumed Commit assumes commit by default.",
-        "b": "Correct. Presumed Abort skips logging aborts, treating missing log as abort.",
-        "c": "Incorrect. 3PC is a different protocol to avoid blocking.",
-        "d": "Incorrect. Two-Phase Locking is a concurrency control method."
-      },
-      "correctAnswer": "b",
-      "difficulty": "advanced"
-    }
-  ]
+    "questions": [
+        {
+            "question": "What is the primary purpose of the Two-Phase Commit (2PC) protocol?",
+            "options": {
+                "A": "To ensure high availability of services",
+                "B": "To achieve consensus on transaction atomicity in distributed systems",
+                "C": "To encrypt data during transmission",
+                "D": "To reduce network latency"
+            },
+            "answer": "B",
+            "difficulty": "easy"
+        },
+        {
+            "question": "What are the two phases of the 2PC protocol?",
+            "options": {
+                "A": "Request and Response",
+                "B": "Voting and Decision",
+                "C": "Locking and Unlocking",
+                "D": "Read and Write"
+            },
+            "answer": "B",
+            "difficulty": "easy"
+        },
+        {
+            "question": "What message does the coordinator send to initiate a transaction?",
+            "options": {
+                "A": "START",
+                "B": "VOTE_REQUEST",
+                "C": "PREPARE",
+                "D": "BEGIN"
+            },
+            "answer": "C",
+            "difficulty": "easy"
+        },
+        {
+            "question": "What does a participant do if it is able to commit a transaction?",
+            "options": {
+                "A": "It immediately commits the transaction.",
+                "B": "It sends a VOTE_COMMIT message to the coordinator.",
+                "C": "It waits for other participants to vote.",
+                "D": "It sends an ACK message to the coordinator."
+            },
+            "answer": "B",
+            "difficulty": "intermediate"
+        },
+        {
+            "question": "When does the coordinator send a GLOBAL_COMMIT message?",
+            "options": {
+                "A": "As soon as one participant votes to commit.",
+                "B": "After a fixed time interval.",
+                "C": "When all participants have voted to commit.",
+                "D": "It never sends a GLOBAL_COMMIT message."
+            },
+            "answer": "C",
+            "difficulty": "intermediate"
+        },
+        {
+            "question": "What happens if a participant votes to abort?",
+            "options": {
+                "A": "The coordinator ignores the vote.",
+                "B": "The coordinator asks the participant to vote again.",
+                "C": "The coordinator forces the participant to commit.",
+                "D": "The coordinator sends a GLOBAL_ABORT to all participants."
+            },
+            "answer": "D",
+            "difficulty": "intermediate"
+        },
+        {
+            "question": "What is the 'blocking problem' in 2PC?",
+            "options": {
+                "A": "Participants block each other from accessing resources.",
+                "B": "The coordinator blocks if it doesn't receive votes.",
+                "C": "Participants that voted to commit may be blocked if the coordinator fails.",
+                "D": "The network gets blocked with too many messages."
+            },
+            "answer": "C",
+            "difficulty": "advanced"
+        },
+        {
+            "question": "How does a participant that failed after voting `VOTE_COMMIT` resolve its state upon recovery?",
+            "options": {
+                "A": "It automatically aborts the transaction.",
+                "B": "It automatically commits the transaction.",
+                "C": "It contacts other participants to find out the decision.",
+                "D": "It contacts the coordinator to find out the global decision."
+            },
+            "answer": "D",
+            "difficulty": "advanced"
+        },
+        {
+            "question": "Which of the following is a key reason for using a `READY` log entry in a participant?",
+            "options": {
+                "A": "To inform the coordinator that it is alive.",
+                "B": "To ensure that even if it fails, it remembers its vote and can determine the outcome correctly upon recovery.",
+                "C": "To speed up the commit process.",
+                "D": "To keep a count of the number of transactions."
+            },
+            "answer": "B",
+            "difficulty": "advanced"
+        }
+    ]
 }

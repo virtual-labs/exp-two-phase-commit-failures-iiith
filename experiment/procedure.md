@@ -1,56 +1,22 @@
-### Procedure
+This experiment simulates the Two-Phase Commit protocol. Follow these steps to conduct the experiment:
 
-Use the steps below to run through the baseline commit and then each failure scenario in sequence. The simulator UI consists of:
-- **Canvas** (center): visual nodes/links/messages
-- **Control Panel** (left): Start/Reset buttons, timeouts, clock speed, scenario selector
-- **State & Log Panel** (right): per-node state, protocol log
+1.  **Configure the Transaction:**
+    *   Select the **Number of Participants** from the dropdown menu.
+    *   Choose a **Failure Scenario** to simulate. Options include coordinator or participant failures in either phase, network partitions, or timeouts.
 
----
+2.  **Control the Simulation:**
+    *   Adjust the **Animation Speed** to control the simulation's pace.
+    *   Select the **Simulation Mode**:
+        *   **Step-by-step (Manual):** Use the "Next Step" button to advance the protocol one step at a time.
+        *   **Automatic:** The simulation runs automatically. Use the "Run Simulation" button to start.
 
-### A. Setup & Baseline Commit
-1. **Load the Simulator**
-   - Open the simulation in your browser. You’ll see five nodes: C (coordinator) in pink, P₁–P₄ (participants) in blue, connected by solid gray links.
-2. **Verify Defaults**
-   - Vote Timeout = 5000 ms; Decision Timeout = 5000 ms; Clock 1×.
-3. **Start a Clean Run**
-   - Click **Reset Simulation**. Confirm all node states read `INIT` and log is empty.
-4. **Execute Normal Commit**
-   - Click **Start Transaction**.
-   - Watch in the log:
-     - C → PREPARE → P₁–P₄ → each logs READY and replies VOTE_COMMIT
-     - C collects all votes, logs COMMIT, broadcasts GLOBAL_COMMIT
-     - P₁–P₄ each log COMMIT, send ACK → C completes.
-   - Confirm all four participants end in `COMMITTING` → `DONE` and coordinator state `DONE`.
+3.  **Observe the Simulation:**
+    *   The **Simulation Area** visually represents the coordinator, participants, and messages.
+    *   The **Phase Indicator** shows the current phase of the protocol.
+    *   The **Transaction Log** displays a detailed log of all actions and state changes.
+    *   The **Transaction Statistics** panel shows counts of successful commits, aborts, and failures.
 
----
-
-### B. Progress-Based Failure Scenarios
-Use the **Scenario** dropdown to pick each task in order. You may only inject the *allowed* failures per scenario.
-
-#### Scenario 1: Single Participant Crash
-- **Goal:** Force GLOBAL_ABORT by crashing exactly one participant before it votes.
-- **Allowed:** 1 participant crash.
-- **Steps:**
-  1. **Reset** the sim.
-  2. **Select** “Single Participant Crash.” Read instructions.
-  3. Click **Start Transaction**.
-  4. As soon as any one P (e.g. P₂) receives PREPARE but *before* it sends VOTE_COMMIT, **click** that node to crash it (it’ll gray out).
-  5. Wait for Vote‐Timeout → C must decide GLOBAL_ABORT.
-  6. **Check:** All P₁, P₃, P₄ log ABORT; coordinator logs ABORT.
-  7. Simulator flashes “Scenario Passed!” and unlocks the next scenario.
-
-#### Scenario 2: Dropped Vote Message
-- **Goal:** Force ABORT by dropping exactly one VOTE_COMMIT.
-- **Allowed:** 1 link down.
-- **Steps:**
-  1. **Click** “Dropped Vote Message” in the Scenario dropdown.
-  2. **Reset**.
-  3. **Start Transaction**.
-  4. Immediately after C sends PREPARE, **click** the link between C and one P (e.g. P₃) to bring it down (dashed red).
-  5. Wait for Vote‐Timeout → C must GLOBAL_ABORT.
-  6. **Verify:** P₃ never sent a vote; P₁, P₂, P₄ receive GLOBAL_ABORT and abort.
-  7. “Scenario Passed!” appears; Scenario 3 unlocked.
-
----
-
-Enjoy exploring how 2PC handles failures in addtional scenarios!
+4.  **Run Scenarios:**
+    *   Start with the "No Failures" scenario to understand the normal workflow.
+    *   Run each of the failure scenarios to observe how the protocol handles them.
+    *   Use the "Reset Simulation" button to start a new simulation.
