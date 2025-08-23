@@ -110,6 +110,8 @@ Two-Phase Commit provides a simple, widely deployed mechanism for achieving atom
 
 # Theory: Two-Phase Commit Protocol
 
+### Theory
+
 The Two-Phase Commit (2PC) protocol is a distributed algorithm that ensures all participating processes in a distributed transaction either commit or abort. It is a blocking protocol, meaning that a failure of the coordinator can cause participants to block until the coordinator recovers.
 
 The protocol works in two phases:
