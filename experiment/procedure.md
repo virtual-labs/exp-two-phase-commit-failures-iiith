@@ -1,5 +1,3 @@
-### Procedure
-
 This experiment simulates the Two-Phase Commit protocol. Follow these steps to conduct the experiment:
 
 1.  **Configure the Transaction:**
