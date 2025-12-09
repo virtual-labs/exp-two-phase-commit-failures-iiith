@@ -15,6 +15,8 @@ class TwoPhaseCommitSimulation {
             failures: 0,
             total: 0
         };
+        this.coordinatorState = 'idle';
+        this.participantStates = [];
         
         this.initializeElements();
         this.bindEvents();
@@ -38,6 +40,10 @@ class TwoPhaseCommitSimulation {
         this.nextStepBtn = document.getElementById('nextStepBtn');
         this.runAutoBtn = document.getElementById('runAutoBtn');
         this.resetBtn = document.getElementById('resetSimulation');
+        
+        this.coordinatorStatusBadge = document.getElementById('coordinatorStatus');
+        this.coordinatorDetails = document.getElementById('coordinatorDetails');
+        this.participantsStateContainer = document.getElementById('participantsState');
     }
 
     bindEvents() {
@@ -69,7 +75,11 @@ class TwoPhaseCommitSimulation {
             this.log(`Animation speed changed to ${e.target.value}x`, 'info');
         });
 
-        this.coordinator.addEventListener('mouseenter', (e) => this.showTooltip(e, 'Transaction Coordinator'));
+        this.coordinator.addEventListener('mouseenter', (e) => {
+            const status = this.coordinatorState;
+            const tooltipText = `Transaction Coordinator\nStatus: ${status}\nPhase: ${this.currentPhase}`;
+            this.showTooltip(e, tooltipText);
+        });
         this.coordinator.addEventListener('mouseleave', () => this.hideTooltip());
     }
 
@@ -96,6 +106,18 @@ class TwoPhaseCommitSimulation {
         return descriptions[mode] || mode;
     }
 
+    getParticipantStateDescription(status) {
+        const descriptions = {
+            'ready': 'Waiting for transaction',
+            'voted-yes': 'Voted to commit',
+            'voted-no': 'Voted to abort',
+            'committed': 'Transaction committed',
+            'aborted': 'Transaction aborted',
+            'failed': 'Node failure detected'
+        };
+        return descriptions[status] || 'Unknown state';
+    }
+
     createParticipants() {
         this.participantsContainer.innerHTML = '';
         this.participants = [];
@@ -120,20 +142,24 @@ class TwoPhaseCommitSimulation {
             participant.style.top = `${y}%`;
             participant.style.transform = 'translate(-50%, -50%)';
             
-            participant.addEventListener('mouseenter', (e) => 
-                this.showTooltip(e, `Participant ${i + 1} - Status: ${participant.dataset.status}`)
-            );
+            participant.addEventListener('mouseenter', (e) => {
+                const status = participant.dataset.status || 'ready';
+                const tooltipText = `Participant ${i + 1}\nStatus: ${status}\nState: ${this.getParticipantStateDescription(status)}`;
+                this.showTooltip(e, tooltipText);
+            });
             participant.addEventListener('mouseleave', () => this.hideTooltip());
             
             this.participantsContainer.appendChild(participant);
             this.participants.push(participant);
+            this.participantStates[i] = { id: i + 1, status: 'ready', state: 'idle' };
         }
         
         this.log(`Network initialized with ${this.participantCount} participants`, 'info');
+        this.updateProcessStateUI();
     }
 
     showTooltip(event, text) {
-        this.tooltip.textContent = text;
+        this.tooltip.innerHTML = text.replace(/\n/g, '<br>');
         this.tooltip.style.left = event.pageX + 10 + 'px';
         this.tooltip.style.top = event.pageY - 30 + 'px';
         this.tooltip.classList.add('show');
@@ -194,16 +220,63 @@ class TwoPhaseCommitSimulation {
         }
     }
 
+    updateProcessStateUI() {
+        // Update coordinator status
+        if (this.coordinatorStatusBadge) {
+            const coordinatorClass = this.coordinator.classList.contains('failed') ? 'failed' : 
+                                    this.coordinator.classList.contains('active') ? 'active' : 'ready';
+            this.coordinatorStatusBadge.textContent = coordinatorClass.charAt(0).toUpperCase() + coordinatorClass.slice(1);
+            this.coordinatorStatusBadge.className = `process-status-badge status-${coordinatorClass}`;
+        }
+        
+        if (this.coordinatorDetails) {
+            this.coordinatorDetails.innerHTML = `
+                <div class="detail-item">State: <span class="detail-value">${this.coordinatorState}</span></div>
+                <div class="detail-item">Phase: <span class="detail-value">${this.currentPhase}</span></div>
+            `;
+        }
+        
+        // Update participants state
+        if (this.participantsStateContainer) {
+            this.participantsStateContainer.innerHTML = '';
+            this.participants.forEach((participant, i) => {
+                const status = participant.dataset.status || 'ready';
+                const isFailed = participant.classList.contains('failed');
+                const isActive = participant.classList.contains('voted-yes') || participant.classList.contains('voted-no');
+                
+                const stateDiv = document.createElement('div');
+                stateDiv.className = 'process-node';
+                stateDiv.innerHTML = `
+                    <div class="process-node-header">
+                        <span class="process-node-icon">💾</span>
+                        <span class="process-node-name">P${i + 1}</span>
+                        <span class="process-status-badge status-${isFailed ? 'failed' : isActive ? 'active' : 'ready'}">
+                            ${isFailed ? 'Failed' : isActive ? 'Active' : 'Ready'}
+                        </span>
+                    </div>
+                    <div class="process-node-details">
+                        <div class="detail-item">Status: <span class="detail-value">${status}</span></div>
+                    </div>
+                `;
+                this.participantsStateContainer.appendChild(stateDiv);
+            });
+        }
+    }
+
     async manualPhase1Start() {
         this.currentPhase = 'phase1';
         this.updatePhaseIndicator();
         this.coordinator.classList.add('active');
+        this.coordinatorState = 'sending-prepare';
+        this.updateProcessStateUI();
         
         this.log('Phase 1: Coordinator sending PREPARE messages...', 'info');
         
         if (this.failureMode === 'coordinator_phase1') {
             this.log('Coordinator fails before sending PREPARE messages.', 'error');
             this.coordinator.classList.add('failed');
+            this.coordinatorState = 'failed';
+            this.updateProcessStateUI();
             this.showFailureOverlay();
             this.stats.failures++;
             throw new Error('Coordinator failed in Phase 1');
@@ -243,12 +316,17 @@ class TwoPhaseCommitSimulation {
             const vote = (Math.random() > 0.15) ? 'YES' : 'NO';
             await this.sendMessage(this.participants[i], this.coordinator, `VOTE_${vote}`);
             this.participants[i].classList.add(vote === 'YES' ? 'voted-yes' : 'voted-no');
+            this.participants[i].dataset.status = vote === 'YES' ? 'voted-yes' : 'voted-no';
+            this.participantStates[i].status = vote === 'YES' ? 'voted-yes' : 'voted-no';
+            this.updateProcessStateUI();
             
             if (vote === 'NO') allVotesYes = false;
             participantResponses++;
         }
         
         this.coordinator.classList.remove('active');
+        this.coordinatorState = 'processing-votes';
+        this.updateProcessStateUI();
         
         if (allVotesYes && participantResponses === this.participants.length) {
             this.log('All participants voted YES. Preparing to commit.', 'success');
@@ -264,6 +342,8 @@ class TwoPhaseCommitSimulation {
     async manualPhase2Decision() {
         this.updatePhaseIndicator();
         this.coordinator.classList.add('active');
+        this.coordinatorState = 'broadcasting-decision';
+        this.updateProcessStateUI();
         
         const decision = this.currentPhase === 'prepare_commit' ? 'COMMIT' : 'ABORT';
         this.log(`Phase 2: Broadcasting ${decision} decision...`, 'info');
@@ -271,6 +351,8 @@ class TwoPhaseCommitSimulation {
         if (this.failureMode === 'coordinator_phase2') {
             this.log('Coordinator fails before sending decision.', 'error');
             this.coordinator.classList.add('failed');
+            this.coordinatorState = 'failed';
+            this.updateProcessStateUI();
             this.showFailureOverlay();
             this.stats.failures++;
             throw new Error('Coordinator failed in Phase 2');
@@ -296,14 +378,22 @@ class TwoPhaseCommitSimulation {
             if (this.failureMode === 'participant_phase2' && i === 1) {
                 this.log(`Participant ${i + 1} fails before acknowledging.`, 'error');
                 this.participants[i].classList.add('failed');
+                this.participants[i].dataset.status = 'failed';
+                this.participantStates[i].status = 'failed';
+                this.updateProcessStateUI();
                 this.stats.failures++;
             } else {
                 await this.sendMessage(this.participants[i], this.coordinator, 'ACK');
                 this.participants[i].classList.add(decision === 'COMMIT' ? 'committed' : 'aborted');
+                this.participants[i].dataset.status = decision === 'COMMIT' ? 'committed' : 'aborted';
+                this.participantStates[i].status = decision === 'COMMIT' ? 'committed' : 'aborted';
+                this.updateProcessStateUI();
             }
         }
         
         this.coordinator.classList.remove('active');
+        this.coordinatorState = 'finalizing';
+        this.updateProcessStateUI();
         this.completeManualTransaction(decision === 'COMMIT');
     }
 
@@ -311,15 +401,18 @@ class TwoPhaseCommitSimulation {
         if (isSuccess) {
             this.log('Transaction successfully committed!', 'success');
             this.currentPhase = 'committed';
+            this.coordinatorState = 'committed';
             this.stats.successful++;
         } else {
             this.log('Transaction aborted.', 'error');
             this.currentPhase = 'aborted';
+            this.coordinatorState = 'aborted';
             this.stats.aborted++;
         }
         
         this.updatePhaseIndicator();
         this.updateStats();
+        this.updateProcessStateUI();
         this.isRunning = false;
         this.manualStep = 0;
         
@@ -378,15 +471,20 @@ class TwoPhaseCommitSimulation {
         
         if (this.currentPhase === 'prepare_commit') {
             this.currentPhase = 'committed';
+            this.coordinatorState = 'committed';
         } else if (this.currentPhase === 'prepare_abort') {
             this.currentPhase = 'aborted';
+            this.coordinatorState = 'aborted';
         }
+        this.updateProcessStateUI();
     }
 
     async executePhase1() {
         this.currentPhase = 'phase1';
         this.updatePhaseIndicator();
         this.coordinator.classList.add('active');
+        this.coordinatorState = 'sending-prepare';
+        this.updateProcessStateUI();
         this.log('Phase 1: Prepare phase initiated', 'info');
 
         await this.delay(500);
@@ -394,6 +492,8 @@ class TwoPhaseCommitSimulation {
         if (this.failureMode === 'coordinator_phase1') {
             this.log('Coordinator fails before sending PREPARE.', 'error');
             this.coordinator.classList.add('failed');
+            this.coordinatorState = 'failed';
+            this.updateProcessStateUI();
             this.showFailureOverlay();
             throw new Error('Coordinator failed in Phase 1');
         }
@@ -519,14 +619,18 @@ class TwoPhaseCommitSimulation {
     async executePhase2() {
         this.updatePhaseIndicator();
         this.coordinator.classList.add('active');
+        this.coordinatorState = 'broadcasting-decision';
+        this.updateProcessStateUI();
         
         const decision = this.currentPhase === 'prepare_commit' ? 'COMMIT' : 'ABORT';
         this.log(`Phase 2: Broadcasting ${decision} decision`, 'info');
         await this.delay(500);
         
         if (this.failureMode === 'coordinator_phase2') {
-            this.log('Coordinator fails before sending decision.', 'error');
+            this.log('Coordinator fails before broadcasting decision', 'error');
             this.coordinator.classList.add('failed');
+            this.coordinatorState = 'failed';
+            this.updateProcessStateUI();
             this.showFailureOverlay();
             throw new Error('Coordinator failed in Phase 2');
         }
@@ -545,16 +649,24 @@ class TwoPhaseCommitSimulation {
             if (this.participants[i].classList.contains('failed')) continue;
             
             if (this.failureMode === 'participant_phase2' && i === 1) {
-                this.log(`Participant ${i + 1} fails before acknowledging.`, 'error');
+                this.log(`Participant ${i + 1} fails during commit phase`, 'error');
                 this.participants[i].classList.add('failed');
+                this.participants[i].dataset.status = 'failed';
+                this.participantStates[i].status = 'failed';
+                this.updateProcessStateUI();
                 continue;
             }
             
-            await this.sendMessage(this.participants[i], this.coordinator, 'ACK');
+            await this.sendMessage(this.participants[i], this.coordinator, `${decision}_ACK`);
             this.participants[i].classList.add(decision === 'COMMIT' ? 'committed' : 'aborted');
+            this.participants[i].dataset.status = decision === 'COMMIT' ? 'committed' : 'aborted';
+            this.participantStates[i].status = decision === 'COMMIT' ? 'committed' : 'aborted';
+            this.updateProcessStateUI();
         }
         
         this.coordinator.classList.remove('active');
+        this.coordinatorState = 'finalizing';
+        this.updateProcessStateUI();
     }
 
     // UTILITY FUNCTIONS
@@ -592,11 +704,17 @@ class TwoPhaseCommitSimulation {
     }
 
     resetParticipantStates() {
-        this.participants.forEach(participant => {
+        this.participants.forEach((participant, i) => {
             participant.className = 'participant';
             participant.dataset.status = 'ready';
+            if (this.participantStates[i]) {
+                this.participantStates[i].status = 'ready';
+                this.participantStates[i].state = 'idle';
+            }
         });
         this.coordinator.className = 'coordinator';
+        this.coordinatorState = 'idle';
+        this.updateProcessStateUI();
     }
 
     updatePhaseIndicator() {
