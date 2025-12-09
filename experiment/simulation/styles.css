@@ -1107,3 +1107,113 @@
                 display: none !important;
             }
         }
+
+        .process-state-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .process-node {
+            background: white;
+            border-radius: 8px;
+            padding: 12px;
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+
+        .process-node:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .process-node-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .process-node-icon {
+            font-size: 1.2em;
+        }
+
+        .process-node-name {
+            font-weight: 600;
+            color: #2d3748;
+            flex: 1;
+        }
+
+        .process-status-badge {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .process-status-badge.status-ready {
+            background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+            color: #0369a1;
+        }
+
+        .process-status-badge.status-active {
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            color: #047857;
+            animation: statusPulse 2s infinite;
+        }
+
+        .process-status-badge.status-failed {
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+            color: #dc2626;
+        }
+
+        @keyframes statusPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .process-node-details {
+            padding-left: 32px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .detail-item {
+            font-size: 0.75rem;
+            color: #64748b;
+        }
+
+        .detail-value {
+            font-weight: 600;
+            color: #334155;
+        }
+
+        .participants-state {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .participants-state::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .participants-state::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 2px;
+        }
+
+        .participants-state::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 2px;
+        }
+
+        .tooltip {
+            white-space: pre-line;
+            line-height: 1.4;
+        }

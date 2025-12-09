@@ -124,6 +124,25 @@
             </div>
 
             <div class="status-section">
+                <h4>Process State</h4>
+                <div class="process-state-container">
+                    <div class="process-node">
+                        <div class="process-node-header">
+                            <span class="process-node-icon">🎯</span>
+                            <span class="process-node-name">Coordinator</span>
+                            <span class="process-status-badge" id="coordinatorStatus">Ready</span>
+                        </div>
+                        <div class="process-node-details" id="coordinatorDetails">
+                            <div class="detail-item">State: <span class="detail-value">Idle</span></div>
+                        </div>
+                    </div>
+                    <div class="participants-state" id="participantsState">
+                        <!-- Participant states will be dynamically added here -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="status-section">
                 <h4>Transaction Statistics</h4>
                 <div class="stats-grid">
                     <div class="stat-card">
