@@ -1,0 +1,810 @@
+<!DOCTYPE html><html lang="en"><head>
+      <!--Google Tag Manager-->
+      <script class="gtm">
+        var dataLayer = [{
+        'labName': 'Virtual Lab',
+        'discipline': 'Test',
+        'college': 'IIITH',
+        'phase': 'Testing',
+        'expName': '2-PHASE COMMIT PROTOCOL SIMULATION',
+        'expShortName': 'two-phase-commit-failures'
+        }];
+    
+        (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+        new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+        j=d.createElement(s),dl=l!='dataLayer'?'&amp;l='+l:'';j.async=true;j.src=
+        'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+        })(window,document,'script','dataLayer','GTM-5NMQ9NQ');
+      </script>
+      <!--End Google Tag Manager-->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content="" name="description">
+    <meta content="" name="author">
+    
+    	<meta name="experiment-short-name" content="two-phase-commit-failures">
+    	<meta name="developer-institute" content="IIITH">
+    	<meta name="learning-unit" content="2-PHASE COMMIT PROTOCOL SIMULATION">
+    	<meta name="task-name" content="Pretest">
+    
+    <!-- For iPhone -->
+    <meta name="msapplication-TileColor" content="#4076e0">
+    <!-- Chrome, Firefox OS and Opera -->
+    <meta name="theme-color" content="#4076e0">
+    <!-- Windows Phone -->
+    <meta name="msapplication-navbutton-color" content="#4076e0">
+    <title>Virtual Labs</title>
+    <link rel="shortcut icon" href="./assets/images/favicon.ico">
+    <link rel="stylesheet" href="./assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/4.0.0/github-markdown.min.css" integrity="sha512-Oy18vBnbSJkXTndr2n6lDMO5NN31UljR8e/ICzVPrGpSud4Gkckb8yUpqhKuUNoE+o9gAb4O/rAxxw1ojyUVzg==" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans&amp;family=Raleway&amp;display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./assets/fonts/font-awesome-4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="./assets/css/github-markdown.min.css">
+    <link rel="stylesheet" href="./assets/css/vlabs-style.css">
+    <link rel="stylesheet" href="./assets/css/toast.css">
+    <link rel="stylesheet" href="./assets/katex_assets/katex.min.css">
+    
+    <script src="./assets/js/jquery-3.4.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js" integrity="sha384-q2kxQ16AaE6UbzuKqyBE9/u/KzioAlnx2maXQHiDX9d4/zp8Ok3f+M7DPm+Ib6IU" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.min.js" integrity="sha384-pQQkAEnwaBkjpqZ8RU1fF1AKtTcHJwFl3pblpTlHXybJjHpMYo79HY3hIi4NKxyj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+      h1 {
+      font-size: 1.8rem;
+      }
+      h2 {
+      font-size: 1.4rem;
+      }
+      h3 {
+      font-size: 1.2rem;
+      }
+
+      h2, h3 {
+      font-weight: 800;
+      }
+    </style>
+    
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css"></head>
+  <body class="p-0 container-fluid vlabs-page d-flex flex-column justify-content-between">
+      <!--Google Tag Manager (noscript)-->
+      <noscript class="gtm">
+        <iframe height="0" src="https://www.googletagmanager.com/ns.html?id=GTM-5NMQ9NQ" style="display:none;visibility:hidden" width="0">
+        </iframe>
+      </noscript>
+      <!--End Google Tag Manager (noscript)-->
+  
+      <header class="vlabs-header sticky-top bg-white">
+        <nav class="p-0 navbar navbar-light d-flex align-items-stretch">
+          
+          <button class="navbar-toggler px-4" type="button" onclick="toggle()">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+      
+          <div class="d-flex justify-content-center">        
+            <a href="https://vlab.co.in" class="navbar-brand">
+              <img src="./assets/images/vlabs-color-small-moe.jpg" alt="vlabs logo" class="vlabs-logo">
+            </a>
+          </div>
+          
+          <div id="headerNavbar" class="d-none border-top flex-grow-1 d-lg-flex align-items-center justify-content-end">
+            <div class="svc-rating-display">
+                <rating-display spreadsheetid="1x12nhpp0QvnsA6x-O1sV4IA9SAbfVsq_wiexWkutOmU" sheetname="Experiment-Database" columnname="Experiment Short Name" columnvalue="two-phase-commit-failures" imagesdirectory="/plugins/svc-rating/images/">
+                </rating-display>
+            </div>      <div class="svc-rating-submit">
+                <rating-submit title="Rate" this="" experiment="">
+                </rating-submit>
+            </div>      <bug-report id="bug-report" title="[BUG REPORT] 2-PHASE COMMIT PROTOCOL SIMULATION" page-type="assesment" context-info="{&quot;organisation&quot;:&quot;Virtual Labs&quot;,&quot;developer_institute&quot;:&quot;IIITH&quot;,&quot;expname&quot;:&quot;2-PHASE COMMIT PROTOCOL SIMULATION&quot;,&quot;labname&quot;:&quot;Virtual Lab&quot;,&quot;phase&quot;:&quot;Testing&quot;}" checkbox-json="{&quot;text&quot;:[&quot;Insufficient Content&quot;],&quot;video&quot;:[&quot;Insufficient Content&quot;],&quot;assesment&quot;:[&quot;Incorrect Options&quot;,&quot;Incorrect Answer&quot;,&quot;Incorrect Question&quot;],&quot;assessment&quot;:[&quot;Incorrect Options&quot;,&quot;Incorrect Answer&quot;,&quot;Incorrect Question&quot;],&quot;simulation&quot;:[&quot;Simulation Not Working&quot;,&quot;Incorrect Results/Observations&quot;,&quot;Insufficient/Incorrect Instructions&quot;],&quot;DEFAULT&quot;:[&quot;Page Not Loading&quot;,&quot;Content Not Visible&quot;,&quot;Incorrect Content&quot;]}" button_style="border: none; color: #fff; background-color: #288ec8; text-align: center; font-size: 1.05rem; border-radius: 1em;padding: 0.6em 1.2em; margin: 0 10px" position="override" custom_button_class="v-button"></bug-report>
+          </div>
+        </nav>
+      </header>
+      <div class="container-fluid flex-fill d-flex flex-column vlabs-page-main">
+        <div class="row d-flex justify-content-between">
+          <div class="flex-column">
+          <div class="row py-4 px-4 breadcrumbs">
+          	<div class="title is-4 tools">Tools</div>
+          	<span class="mx-2">
+          		<i aria-hidden="true" class="fa fa-angle-right"></i>
+          	</span>
+          	<a href="performance-report.html" class="my-2 mx-3" target="_blank">
+          		<button class="v-button">Performance Tool</button>
+          	</a>
+          	<a href="validator-report.html" class="my-2 mx-3" target="_blank">
+          		<button class="v-button">Validation Tool</button>
+          	</a>
+          </div>
+          </div>
+        </div>
+        <div class="row flex-grow-1 d-flex flex-nowrap flex-column flex-lg-row">
+          <div class="modal fade popupmenu" id="popupMenu" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+              <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                  <div class="modal-content">
+                      <div class="modal-header">
+                          <h5 class="modal-title" id="exampleModalLabel">
+                              <a href="https://vlab.co.in" class="navbar-brand">
+                                  <img src="./assets/images/vlabs-color-small-moe.jpg" alt="vlabs logo" class="vlabs-logo">
+                              </a>
+                          </h5>
+                          <button type="button" class="btn-close align-self-center" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body nav-menu">
+                              <div>
+                                  <div class="d-flex nav-menu-body">
+                                      <a href="index.html" class="p-2 ">
+                                      Aim
+                                      </a>
+                                      
+                                  </div>
+                                  <div id="t-" class="collapse">
+                                      <div class="px-3 d-flex flex-column tasks align-items-center align-items-lg-start">
+                                      </div>
+                                  </div>
+                              </div>
+                              <div>
+                                  <div class="d-flex nav-menu-body">
+                                      <a href="theory.html" class="p-2 ">
+                                      Theory
+                                      </a>
+                                      
+                                  </div>
+                                  <div id="t-" class="collapse">
+                                      <div class="px-3 d-flex flex-column tasks align-items-center align-items-lg-start">
+                                      </div>
+                                  </div>
+                              </div>
+                              <div>
+                                  <div class="d-flex nav-menu-body">
+                                      <a href="pretest.html" class="p-2  current-item ">
+                                      Pretest
+                                      </a>
+                                      
+                                  </div>
+                                  <div id="t-" class="collapse">
+                                      <div class="px-3 d-flex flex-column tasks align-items-center align-items-lg-start">
+                                      </div>
+                                  </div>
+                              </div>
+                              <div>
+                                  <div class="d-flex nav-menu-body">
+                                      <a href="procedure.html" class="p-2 ">
+                                      Procedure
+                                      </a>
+                                      
+                                  </div>
+                                  <div id="t-" class="collapse">
+                                      <div class="px-3 d-flex flex-column tasks align-items-center align-items-lg-start">
+                                      </div>
+                                  </div>
+                              </div>
+                              <div>
+                                  <div class="d-flex nav-menu-body">
+                                      <a href="simulation.html" class="p-2 ">
+                                      Simulation
+                                      </a>
+                                      
+                                  </div>
+                                  <div id="t-" class="collapse">
+                                      <div class="px-3 d-flex flex-column tasks align-items-center align-items-lg-start">
+                                      </div>
+                                  </div>
+                              </div>
+                              <div>
+                                  <div class="d-flex nav-menu-body">
+                                      <a href="posttest.html" class="p-2 ">
+                                      Posttest
+                                      </a>
+                                      
+                                  </div>
+                                  <div id="t-" class="collapse">
+                                      <div class="px-3 d-flex flex-column tasks align-items-center align-items-lg-start">
+                                      </div>
+                                  </div>
+                              </div>
+                              <div>
+                                  <div class="d-flex nav-menu-body">
+                                      <a href="references.html" class="p-2 ">
+                                      References
+                                      </a>
+                                      
+                                  </div>
+                                  <div id="t-" class="collapse">
+                                      <div class="px-3 d-flex flex-column tasks align-items-center align-items-lg-start">
+                                      </div>
+                                  </div>
+                              </div>
+                              <div>
+                                  <div class="d-flex nav-menu-body">
+                                      <a href="contributors.html" class="p-2 ">
+                                      Contributors
+                                      </a>
+                                      
+                                  </div>
+                                  <div id="t-" class="collapse">
+                                      <div class="px-3 d-flex flex-column tasks align-items-center align-items-lg-start">
+                                      </div>
+                                  </div>
+                              </div>
+                              <div>
+                                  <div class="d-flex nav-menu-body">
+                                      <a href="feedback.html" class="p-2 ">
+                                      Feedback
+                                      </a>
+                                      
+                                  </div>
+                                  <div id="t-" class="collapse">
+                                      <div class="px-3 d-flex flex-column tasks align-items-center align-items-lg-start">
+                                      </div>
+                                  </div>
+                              </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+          <div class="nav flex-column sidebar nav-menu flex-shrink-0 px-lg-4 align-items-center align-items-lg-start hidden d-none d-lg-flex" id="menu">
+                <div>
+                    <div class="d-flex nav-menu-body">
+                        <a href="index.html" class="p-2 ">
+                        Aim
+                        </a>
+                        
+                    </div>
+                    <div id="t-" class="collapse">
+                        <div class="px-3 d-flex flex-column tasks align-items-center align-items-lg-start">
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div class="d-flex nav-menu-body">
+                        <a href="theory.html" class="p-2 ">
+                        Theory
+                        </a>
+                        
+                    </div>
+                    <div id="t-" class="collapse">
+                        <div class="px-3 d-flex flex-column tasks align-items-center align-items-lg-start">
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div class="d-flex nav-menu-body">
+                        <a href="pretest.html" class="p-2  current-item ">
+                        Pretest
+                        </a>
+                        
+                    </div>
+                    <div id="t-" class="collapse">
+                        <div class="px-3 d-flex flex-column tasks align-items-center align-items-lg-start">
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div class="d-flex nav-menu-body">
+                        <a href="procedure.html" class="p-2 ">
+                        Procedure
+                        </a>
+                        
+                    </div>
+                    <div id="t-" class="collapse">
+                        <div class="px-3 d-flex flex-column tasks align-items-center align-items-lg-start">
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div class="d-flex nav-menu-body">
+                        <a href="simulation.html" class="p-2 ">
+                        Simulation
+                        </a>
+                        
+                    </div>
+                    <div id="t-" class="collapse">
+                        <div class="px-3 d-flex flex-column tasks align-items-center align-items-lg-start">
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div class="d-flex nav-menu-body">
+                        <a href="posttest.html" class="p-2 ">
+                        Posttest
+                        </a>
+                        
+                    </div>
+                    <div id="t-" class="collapse">
+                        <div class="px-3 d-flex flex-column tasks align-items-center align-items-lg-start">
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div class="d-flex nav-menu-body">
+                        <a href="references.html" class="p-2 ">
+                        References
+                        </a>
+                        
+                    </div>
+                    <div id="t-" class="collapse">
+                        <div class="px-3 d-flex flex-column tasks align-items-center align-items-lg-start">
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div class="d-flex nav-menu-body">
+                        <a href="contributors.html" class="p-2 ">
+                        Contributors
+                        </a>
+                        
+                    </div>
+                    <div id="t-" class="collapse">
+                        <div class="px-3 d-flex flex-column tasks align-items-center align-items-lg-start">
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div class="d-flex nav-menu-body">
+                        <a href="feedback.html" class="p-2 ">
+                        Feedback
+                        </a>
+                        
+                    </div>
+                    <div id="t-" class="collapse">
+                        <div class="px-3 d-flex flex-column tasks align-items-center align-items-lg-start">
+                        </div>
+                    </div>
+                </div>
+          </div>          <div class="vlabs-page-content px-5 pb-4 flex-grow-1 markdown-body">
+            <div class="text-center fix-spacing">
+              <h2 id="2-phase-commit-protocol-simulation">2-Phase Commit Protocol Simulation</h2>
+          
+            </div>
+                  <div id="difficulty-container" style="border-bottom: 1px solid #eaecef; padding-bottom: .3em; margin: 0" class="row">
+                    <div id="difficulty-label" class="col-12 col-md-3" style="display:none"><strong>Choose difficulty: </strong></div>
+                    <div class="form-check col-12 col-md-3" style="display:none">
+                      <input id="beginner" type="checkbox" value="">
+                      <label class="form-check-label" for="flexCheckDefault">
+                        <strong>Beginner</strong>
+                      </label>
+                    </div>
+                    <div class="form-check col-12 col-md-3" style="display:none">
+                      <input id="intermediate" type="checkbox" value="">
+                      <label class="form-check-label" for="flexCheckDefault">
+                        <strong>Intermediate</strong>
+                      </label>
+                    </div>
+                    <div class="form-check col-12 col-md-3" style="display:none">
+                      <input id="advanced" type="checkbox" value="">
+                      <label class="form-check-label" for="flexCheckDefault">
+                        <strong>Advanced</strong>
+                      </label>
+                    </div>
+                  </div>
+                  
+                  <div id="quiz" class="versiontrue" style="margin-top: 1rem">
+                
+                
+                  <div class="question beginner">
+                    What is the primary purpose of the Two-Phase Commit (2PC) protocol?
+                  </div>
+                  
+                  <div class="answers">
+                    <div id="answer0a">
+                      <label>
+                        <input type="radio" name="question0" value="a">
+                        a: To ensure high availability of services
+                      </label>
+                      <a href="#" id="explanation0a" class="accordion" onclick="return false;">Explanation</a>
+                    </div>
+                    <p class="panel">Explanation</p>
+                    <div id="answer0b">
+                      <label>
+                        <input type="radio" name="question0" value="b">
+                        b: To achieve consensus on transaction atomicity in distributed systems
+                      </label>
+                      <a href="#" id="explanation0b" class="accordion" onclick="return false;">Explanation</a>
+                    </div>
+                    <p class="panel">Explanation</p>
+                    <div id="answer0c">
+                      <label>
+                        <input type="radio" name="question0" value="c">
+                        c: To encrypt data during transmission
+                      </label>
+                      <a href="#" id="explanation0c" class="accordion" onclick="return false;">Explanation</a>
+                    </div>
+                    <p class="panel">Explanation</p>
+                    <div id="answer0d">
+                      <label>
+                        <input type="radio" name="question0" value="d">
+                        d: To reduce network latency
+                      </label>
+                      <a href="#" id="explanation0d" class="accordion" onclick="return false;">Explanation</a>
+                    </div>
+                    <p class="panel">Explanation</p>
+                </div>
+                
+                  <div class="question beginner">
+                    In which phase of 2PC does the coordinator ask participants if they are ready to commit?
+                  </div>
+                  
+                  <div class="answers">
+                    <div id="answer1a">
+                      <label>
+                        <input type="radio" name="question1" value="a">
+                        a: The Decision Phase
+                      </label>
+                      <a href="#" id="explanation1a" class="accordion" onclick="return false;">Explanation</a>
+                    </div>
+                    <p class="panel">Explanation</p>
+                    <div id="answer1b">
+                      <label>
+                        <input type="radio" name="question1" value="b">
+                        b: The Commit Phase
+                      </label>
+                      <a href="#" id="explanation1b" class="accordion" onclick="return false;">Explanation</a>
+                    </div>
+                    <p class="panel">Explanation</p>
+                    <div id="answer1c">
+                      <label>
+                        <input type="radio" name="question1" value="c">
+                        c: The Voting Phase
+                      </label>
+                      <a href="#" id="explanation1c" class="accordion" onclick="return false;">Explanation</a>
+                    </div>
+                    <p class="panel">Explanation</p>
+                    <div id="answer1d">
+                      <label>
+                        <input type="radio" name="question1" value="d">
+                        d: The Acknowledgment Phase
+                      </label>
+                      <a href="#" id="explanation1d" class="accordion" onclick="return false;">Explanation</a>
+                    </div>
+                    <p class="panel">Explanation</p>
+                </div>
+                
+                  <div class="question beginner">
+                    What message does a participant send if it is ready to commit?
+                  </div>
+                  
+                  <div class="answers">
+                    <div id="answer2a">
+                      <label>
+                        <input type="radio" name="question2" value="a">
+                        a: YES
+                      </label>
+                      <a href="#" id="explanation2a" class="accordion" onclick="return false;">Explanation</a>
+                    </div>
+                    <p class="panel">Explanation</p>
+                    <div id="answer2b">
+                      <label>
+                        <input type="radio" name="question2" value="b">
+                        b: VOTE_COMMIT
+                      </label>
+                      <a href="#" id="explanation2b" class="accordion" onclick="return false;">Explanation</a>
+                    </div>
+                    <p class="panel">Explanation</p>
+                    <div id="answer2c">
+                      <label>
+                        <input type="radio" name="question2" value="c">
+                        c: READY
+                      </label>
+                      <a href="#" id="explanation2c" class="accordion" onclick="return false;">Explanation</a>
+                    </div>
+                    <p class="panel">Explanation</p>
+                    <div id="answer2d">
+                      <label>
+                        <input type="radio" name="question2" value="d">
+                        d: ACK
+                      </label>
+                      <a href="#" id="explanation2d" class="accordion" onclick="return false;">Explanation</a>
+                    </div>
+                    <p class="panel">Explanation</p>
+                </div>
+                
+                  <div class="question intermediate">
+                    What happens if the coordinator receives at least one `VOTE_ABORT` message?
+                  </div>
+                  
+                  <div class="answers">
+                    <div id="answer3a">
+                      <label>
+                        <input type="radio" name="question3" value="a">
+                        a: It asks the participant to vote again.
+                      </label>
+                      <a href="#" id="explanation3a" class="accordion" onclick="return false;">Explanation</a>
+                    </div>
+                    <p class="panel">Explanation</p>
+                    <div id="answer3b">
+                      <label>
+                        <input type="radio" name="question3" value="b">
+                        b: It commits the transaction for the other participants.
+                      </label>
+                      <a href="#" id="explanation3b" class="accordion" onclick="return false;">Explanation</a>
+                    </div>
+                    <p class="panel">Explanation</p>
+                    <div id="answer3c">
+                      <label>
+                        <input type="radio" name="question3" value="c">
+                        c: It sends a `GLOBAL_ABORT` message to all participants.
+                      </label>
+                      <a href="#" id="explanation3c" class="accordion" onclick="return false;">Explanation</a>
+                    </div>
+                    <p class="panel">Explanation</p>
+                    <div id="answer3d">
+                      <label>
+                        <input type="radio" name="question3" value="d">
+                        d: It waits for more votes to form a majority.
+                      </label>
+                      <a href="#" id="explanation3d" class="accordion" onclick="return false;">Explanation</a>
+                    </div>
+                    <p class="panel">Explanation</p>
+                </div>
+                
+                  <div class="question intermediate">
+                    Why must a participant write 'READY' to a durable log before sending `VOTE_COMMIT`?
+                  </div>
+                  
+                  <div class="answers">
+                    <div id="answer4a">
+                      <label>
+                        <input type="radio" name="question4" value="a">
+                        a: To prove to the coordinator that it is not busy.
+                      </label>
+                      <a href="#" id="explanation4a" class="accordion" onclick="return false;">Explanation</a>
+                    </div>
+                    <p class="panel">Explanation</p>
+                    <div id="answer4b">
+                      <label>
+                        <input type="radio" name="question4" value="b">
+                        b: To have a record of its vote in case it crashes and recovers.
+                      </label>
+                      <a href="#" id="explanation4b" class="accordion" onclick="return false;">Explanation</a>
+                    </div>
+                    <p class="panel">Explanation</p>
+                    <div id="answer4c">
+                      <label>
+                        <input type="radio" name="question4" value="c">
+                        c: To timestamp the beginning of the transaction.
+                      </label>
+                      <a href="#" id="explanation4c" class="accordion" onclick="return false;">Explanation</a>
+                    </div>
+                    <p class="panel">Explanation</p>
+                    <div id="answer4d">
+                      <label>
+                        <input type="radio" name="question4" value="d">
+                        d: To let other participants know its status.
+                      </label>
+                      <a href="#" id="explanation4d" class="accordion" onclick="return false;">Explanation</a>
+                    </div>
+                    <p class="panel">Explanation</p>
+                </div>
+                
+                  <div class="question intermediate">
+                    If a coordinator fails before sending any decision messages, what is the state of a participant that voted `VOTE_COMMIT`?
+                  </div>
+                  
+                  <div class="answers">
+                    <div id="answer5a">
+                      <label>
+                        <input type="radio" name="question5" value="a">
+                        a: It automatically commits after a timeout.
+                      </label>
+                      <a href="#" id="explanation5a" class="accordion" onclick="return false;">Explanation</a>
+                    </div>
+                    <p class="panel">Explanation</p>
+                    <div id="answer5b">
+                      <label>
+                        <input type="radio" name="question5" value="b">
+                        b: It automatically aborts after a timeout.
+                      </label>
+                      <a href="#" id="explanation5b" class="accordion" onclick="return false;">Explanation</a>
+                    </div>
+                    <p class="panel">Explanation</p>
+                    <div id="answer5c">
+                      <label>
+                        <input type="radio" name="question5" value="c">
+                        c: It is blocked and cannot proceed until the coordinator recovers.
+                      </label>
+                      <a href="#" id="explanation5c" class="accordion" onclick="return false;">Explanation</a>
+                    </div>
+                    <p class="panel">Explanation</p>
+                    <div id="answer5d">
+                      <label>
+                        <input type="radio" name="question5" value="d">
+                        d: It asks other participants for the decision.
+                      </label>
+                      <a href="#" id="explanation5d" class="accordion" onclick="return false;">Explanation</a>
+                    </div>
+                    <p class="panel">Explanation</p>
+                </div>
+                
+                  <div class="question advanced">
+                    Which of the following scenarios is the primary cause of the 'blocking problem' in 2PC?
+                  </div>
+                  
+                  <div class="answers">
+                    <div id="answer6a">
+                      <label>
+                        <input type="radio" name="question6" value="a">
+                        a: A participant fails before voting.
+                      </label>
+                      <a href="#" id="explanation6a" class="accordion" onclick="return false;">Explanation</a>
+                    </div>
+                    <p class="panel">Explanation</p>
+                    <div id="answer6b">
+                      <label>
+                        <input type="radio" name="question6" value="b">
+                        b: A participant fails after voting to abort.
+                      </label>
+                      <a href="#" id="explanation6b" class="accordion" onclick="return false;">Explanation</a>
+                    </div>
+                    <p class="panel">Explanation</p>
+                    <div id="answer6c">
+                      <label>
+                        <input type="radio" name="question6" value="c">
+                        c: The coordinator fails after sending `PREPARE` but before sending the final decision.
+                      </label>
+                      <a href="#" id="explanation6c" class="accordion" onclick="return false;">Explanation</a>
+                    </div>
+                    <p class="panel">Explanation</p>
+                    <div id="answer6d">
+                      <label>
+                        <input type="radio" name="question6" value="d">
+                        d: The network connection between two participants is lost.
+                      </label>
+                      <a href="#" id="explanation6d" class="accordion" onclick="return false;">Explanation</a>
+                    </div>
+                    <p class="panel">Explanation</p>
+                </div>
+                
+                  <div class="question advanced">
+                    How does the 'Presumed Abort' optimization work in 2PC?
+                  </div>
+                  
+                  <div class="answers">
+                    <div id="answer7a">
+                      <label>
+                        <input type="radio" name="question7" value="a">
+                        a: The coordinator presumes all participants will abort and doesn't send a `PREPARE` message.
+                      </label>
+                      <a href="#" id="explanation7a" class="accordion" onclick="return false;">Explanation</a>
+                    </div>
+                    <p class="panel">Explanation</p>
+                    <div id="answer7b">
+                      <label>
+                        <input type="radio" name="question7" value="b">
+                        b: Participants that don't receive a vote request within a certain time automatically abort.
+                      </label>
+                      <a href="#" id="explanation7b" class="accordion" onclick="return false;">Explanation</a>
+                    </div>
+                    <p class="panel">Explanation</p>
+                    <div id="answer7c">
+                      <label>
+                        <input type="radio" name="question7" value="c">
+                        c: The coordinator and participants do not need to write `ABORT` records to their logs.
+                      </label>
+                      <a href="#" id="explanation7c" class="accordion" onclick="return false;">Explanation</a>
+                    </div>
+                    <p class="panel">Explanation</p>
+                    <div id="answer7d">
+                      <label>
+                        <input type="radio" name="question7" value="d">
+                        d: The coordinator presumes a commit vote unless it explicitly receives an abort vote.
+                      </label>
+                      <a href="#" id="explanation7d" class="accordion" onclick="return false;">Explanation</a>
+                    </div>
+                    <p class="panel">Explanation</p>
+                </div>
+                
+                  <div class="question advanced">
+                    Why is Three-Phase Commit (3PC) considered non-blocking compared to 2PC?
+                  </div>
+                  
+                  <div class="answers">
+                    <div id="answer8a">
+                      <label>
+                        <input type="radio" name="question8" value="a">
+                        a: It eliminates the coordinator.
+                      </label>
+                      <a href="#" id="explanation8a" class="accordion" onclick="return false;">Explanation</a>
+                    </div>
+                    <p class="panel">Explanation</p>
+                    <div id="answer8b">
+                      <label>
+                        <input type="radio" name="question8" value="b">
+                        b: It adds a 'pre-commit' phase that allows participants to reach consensus if the coordinator fails.
+                      </label>
+                      <a href="#" id="explanation8b" class="accordion" onclick="return false;">Explanation</a>
+                    </div>
+                    <p class="panel">Explanation</p>
+                    <div id="answer8c">
+                      <label>
+                        <input type="radio" name="question8" value="c">
+                        c: It uses fewer messages, reducing the chance of network failure.
+                      </label>
+                      <a href="#" id="explanation8c" class="accordion" onclick="return false;">Explanation</a>
+                    </div>
+                    <p class="panel">Explanation</p>
+                    <div id="answer8d">
+                      <label>
+                        <input type="radio" name="question8" value="d">
+                        d: It does not require durable logging, making it faster.
+                      </label>
+                      <a href="#" id="explanation8d" class="accordion" onclick="return false;">Explanation</a>
+                    </div>
+                    <p class="panel">Explanation</p>
+                </div>
+               </div>
+                <button id="submit" class="btn btn-primary">Submit Quiz</button>
+                <div id="results"></div>
+          </div>
+            
+            <script>
+              const myQuestions = [{"question":"What is the primary purpose of the Two-Phase Commit (2PC) protocol?","answers":{"a":"To ensure high availability of services","b":"To achieve consensus on transaction atomicity in distributed systems","c":"To encrypt data during transmission","d":"To reduce network latency"},"explanations":{"a":"Incorrect. While related to robust systems, 2PC's direct goal isn't high availability itself.","b":"Correct. 2PC ensures that a transaction across multiple nodes either fully completes (commits) or fully rolls back (aborts).","c":"Incorrect. Encryption is a security concern, not a transactional one.","d":"Incorrect. 2PC adds message overhead, which can increase latency."},"correctAnswer":"b","difficulty":"beginner"},{"question":"In which phase of 2PC does the coordinator ask participants if they are ready to commit?","answers":{"a":"The Decision Phase","b":"The Commit Phase","c":"The Voting Phase","d":"The Acknowledgment Phase"},"explanations":{"a":"Incorrect. The decision is made after voting.","b":"Incorrect. The commit is the result of the decision phase.","c":"Correct. In the first phase, often called the Voting or Prepare phase, the coordinator sends a `PREPARE` message to all participants.","d":"Incorrect. Acknowledgment happens after the decision is executed."},"correctAnswer":"c","difficulty":"beginner"},{"question":"What message does a participant send if it is ready to commit?","answers":{"a":"YES","b":"VOTE_COMMIT","c":"READY","d":"ACK"},"explanations":{"a":"Incorrect. While conceptually correct, the standard message name is more specific.","b":"Correct. This is the standard message indicating a positive vote.","c":"Incorrect. `READY` is a state the participant enters and logs, not the message it sends.","d":"Incorrect. `ACK` is sent after the participant has executed the final commit or abort command."},"correctAnswer":"b","difficulty":"beginner"},{"question":"What happens if the coordinator receives at least one `VOTE_ABORT` message?","answers":{"a":"It asks the participant to vote again.","b":"It commits the transaction for the other participants.","c":"It sends a `GLOBAL_ABORT` message to all participants.","d":"It waits for more votes to form a majority."},"explanations":{"a":"Incorrect. A single abort vote is final.","b":"Incorrect. This would violate the principle of atomicity.","c":"Correct. Any single `VOTE_ABORT` (or a timeout) is enough to make the coordinator decide to abort the entire transaction.","d":"Incorrect. 2PC requires unanimous consent to commit, not a majority."},"correctAnswer":"c","difficulty":"intermediate"},{"question":"Why must a participant write 'READY' to a durable log before sending `VOTE_COMMIT`?","answers":{"a":"To prove to the coordinator that it is not busy.","b":"To have a record of its vote in case it crashes and recovers.","c":"To timestamp the beginning of the transaction.","d":"To let other participants know its status."},"explanations":{"a":"Incorrect. The log is for its own recovery, not for communicating with the coordinator.","b":"Correct. If the participant crashes after voting commit, it must know upon recovery that it is part of an in-progress transaction and must seek the final decision from the coordinator.","c":"Incorrect. While logging involves timestamps, the primary purpose of the READY log is for recovery.","d":"Incorrect. Participants in standard 2PC do not communicate with each other directly."},"correctAnswer":"b","difficulty":"intermediate"},{"question":"If a coordinator fails before sending any decision messages, what is the state of a participant that voted `VOTE_COMMIT`?","answers":{"a":"It automatically commits after a timeout.","b":"It automatically aborts after a timeout.","c":"It is blocked and cannot proceed until the coordinator recovers.","d":"It asks other participants for the decision."},"explanations":{"a":"Incorrect. It cannot unilaterally decide to commit as the global decision might have been to abort.","b":"Incorrect. It cannot unilaterally decide to abort as the global decision might have been to commit.","c":"Correct. This is the well-known 'blocking problem' of 2PC. The participant is in a state of uncertainty.","d":"Incorrect. In standard 2PC, participants only communicate with the coordinator."},"correctAnswer":"c","difficulty":"intermediate"},{"question":"Which of the following scenarios is the primary cause of the 'blocking problem' in 2PC?","answers":{"a":"A participant fails before voting.","b":"A participant fails after voting to abort.","c":"The coordinator fails after sending `PREPARE` but before sending the final decision.","d":"The network connection between two participants is lost."},"explanations":{"a":"Incorrect. If a participant fails before voting, the coordinator will time out and abort the transaction for everyone, which is a resolution.","b":"Incorrect. If it voted to abort, it can safely abort on recovery without waiting.","c":"Correct. Participants that voted `VOTE_COMMIT` are now in a `READY` state and cannot decide the outcome without the coordinator.","d":"Incorrect. A network partition between participants is not an issue as they do not communicate directly."},"correctAnswer":"c","difficulty":"advanced"},{"question":"How does the 'Presumed Abort' optimization work in 2PC?","answers":{"a":"The coordinator presumes all participants will abort and doesn't send a `PREPARE` message.","b":"Participants that don't receive a vote request within a certain time automatically abort.","c":"The coordinator and participants do not need to write `ABORT` records to their logs.","d":"The coordinator presumes a commit vote unless it explicitly receives an abort vote."},"explanations":{"a":"Incorrect. The `PREPARE` message is still essential.","b":"Incorrect. This describes a timeout, not the Presumed Abort optimization.","c":"Correct. If a coordinator or participant recovers and finds no `COMMIT` record for a transaction, it assumes the transaction was aborted. This saves the cost of a disk write for the common abort case.","d":"Incorrect. This would be a 'presumed commit' logic, which is a different optimization."},"correctAnswer":"c","difficulty":"advanced"},{"question":"Why is Three-Phase Commit (3PC) considered non-blocking compared to 2PC?","answers":{"a":"It eliminates the coordinator.","b":"It adds a 'pre-commit' phase that allows participants to reach consensus if the coordinator fails.","c":"It uses fewer messages, reducing the chance of network failure.","d":"It does not require durable logging, making it faster."},"explanations":{"a":"Incorrect. 3PC still has a coordinator.","b":"Correct. The additional phase ensures that there is no single state (like 2PC's `READY` state) from which it's not safe to make a default decision after a coordinator failure. For more details, you can read about it <a href='https://en.wikipedia.org/wiki/Three-phase_commit_protocol' target='_blank'>here</a>.","c":"Incorrect. 3PC actually uses more messages than 2PC.","d":"Incorrect. 3PC still relies on durable logging for recovery."},"correctAnswer":"b","difficulty":"advanced"}];
+            </script>
+              <script src="./assets/js/assessment_v2.js"></script>  
+          <div class="bug-report-mobile">
+              <bug-report id="bug-report" title="[BUG REPORT] 2-PHASE COMMIT PROTOCOL SIMULATION" page-type="assesment" context-info="{&quot;organisation&quot;:&quot;Virtual Labs&quot;,&quot;developer_institute&quot;:&quot;IIITH&quot;,&quot;expname&quot;:&quot;2-PHASE COMMIT PROTOCOL SIMULATION&quot;,&quot;labname&quot;:&quot;Virtual Lab&quot;,&quot;phase&quot;:&quot;Testing&quot;}" checkbox-json="{&quot;text&quot;:[&quot;Insufficient Content&quot;],&quot;video&quot;:[&quot;Insufficient Content&quot;],&quot;assesment&quot;:[&quot;Incorrect Options&quot;,&quot;Incorrect Answer&quot;,&quot;Incorrect Question&quot;],&quot;assessment&quot;:[&quot;Incorrect Options&quot;,&quot;Incorrect Answer&quot;,&quot;Incorrect Question&quot;],&quot;simulation&quot;:[&quot;Simulation Not Working&quot;,&quot;Incorrect Results/Observations&quot;,&quot;Insufficient/Incorrect Instructions&quot;],&quot;DEFAULT&quot;:[&quot;Page Not Loading&quot;,&quot;Content Not Visible&quot;,&quot;Incorrect Content&quot;]}" position="override" button_style="
+                          position: fixed; 
+                          bottom: 20px;
+                          right: 20px;
+                          z-index: 1;
+                          font-size: 0;
+                          padding: 25px;
+                          border-radius: 50%;
+                          border: none;
+                          background-color: #0fc0ff;
+                          background-image: url(data:image/png;base64,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);
+                          background-repeat: no-repeat;
+                          background-position: center;
+                          background-size: 30px;
+                          filter: invert(1);">
+              </bug-report>
+          </div>        </div>
+      </div>
+      <footer class="text-light pt-2 vlabs-footer d-flex flex-column">
+        <div class="row px-5 mx-0">
+          <div class="col d-flex flex-column">
+            <span class="font-weight-bold vlabs-footer-sect-name pb-2 mb-3">Community Links</span>
+            <a href="https://www.sakshat.ac.in/" class="text-light">Sakshat Portal</a>
+            <a href="http://outreach.vlabs.ac.in/" class="text-light">Outreach Portal</a>
+            <a href="https://vlab.co.in/faq" class="text-light">FAQ: Virtual Labs</a>
+          </div>
+          <div class="col d-flex flex-column">
+            <span class="font-weight-bold vlabs-footer-sect-name pb-2 mb-3">Contact Us</span>
+            <span> Phone: General Information: 011-26582050 </span>
+            <span> Email: support@vlabs.ac.in </span>
+          </div>
+          <div class="col d-flex flex-column">
+            <span class="font-weight-bold vlabs-footer-sect-name pb-2 mb-3">Follow Us</span>
+            <div class="social-links">
+      	<a class="p-2 mt-1 mr-2 d-inline-flex justify-content-center align-items-center" style="background: #55acee;" href="https://twitter.com/TheVirtualLabs">
+      	  <i class="fab fa-twitter"></i>
+      	</a>
+      	<a class="p-2 mt-1 mr-2 d-inline-flex justify-content-center align-items-center" style="background: #3b5998;" href="https://www.facebook.com/Virtual-Labs-IIT-Delhi-301510159983871/">
+      	  <i class="fab fa-facebook"></i>
+      	</a>
+      	<a class="p-2 mt-1 mr-2 d-inline-flex justify-content-center align-items-center" style="background: #e52d27;" href="https://www.youtube.com/watch?v=asxRaOgk6a0">
+      	  <i class="fab fa-youtube"></i>
+      	</a>
+      	<a class="p-2 mt-1 mr-2 d-inline-flex justify-content-center align-items-center" style="background: #2867B2;" href="https://in.linkedin.com/in/virtual-labs-008ba9136">
+      	  <i class="fab fa-linkedin"></i>
+      	</a>
+            </div>
+          </div>
+        </div>
+        <div class="m-0 py-2 text-center" style="font-family: &quot;Open Sans&quot;, sans-serif; background: #212121;">
+          <a class="text-primary font-weight-bold" href="https://www.gnu.org/licenses/agpl-3.0.en.html"> AGPL 3.0 </a>
+          &nbsp;&amp;&nbsp;
+          <a class="text-primary font-weight-bold" href="https://creativecommons.org/licenses/by-nc-sa/4.0/"> Creative Commons (CC BY-NC-SA 4.0) </a>
+        </div>
+      </footer>
+    <script src="./assets/js/toggleSidebar.js"></script>
+    <script src="./assets/js/event-handler.js"></script>
+
+
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register("sw.js");
+        });
+      }
+    </script>
+  
+
+<script type="module" src="https://cdn.vlabs.ac.in/bug-report/vlabs-bug-report.js"></script><script type="module" src="/exp-two-phase-commit-failures-iiith/plugins/svc-rating/index.js"></script><script type="module" src="/exp-two-phase-commit-failures-iiith/plugins/svc-rating/config.js"></script><script type="module" src="https://apis.google.com/js/api.js"></script></body></html>
