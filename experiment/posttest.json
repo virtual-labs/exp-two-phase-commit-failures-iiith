@@ -1,56 +1,158 @@
 {
-  "version": 2.0,
-  "questions": [
-    {
-      "question": "When you dropped a single VOTE_COMMIT message by breaking a link, what decision did the coordinator make and why?",
-      "answers": {
-        "a": "GLOBAL_COMMIT, because all participants were READY",
-        "b": "GLOBAL_ABORT, because a vote was missing after timeout",
-        "c": "GLOBAL_COMMIT, because missing votes default to commit",
-        "d": "It blocked indefinitely, waiting for the missing vote"
-      },
-      "explanations": {
-        "a": "Incorrect. READY alone isn’t enough; the coordinator only commits if it actually hears every vote.",
-        "b": "Correct. The coordinator timed out waiting for that vote and aborted.",
-        "c": "Incorrect. Missing votes cause abort, not presumed commit.",
-        "d": "Incorrect. The coordinator times out and makes an abort decision."
-      },
-      "correctAnswer": "b",
-      "difficulty": "intermediate"
-    },
-    {
-      "question": "Why is durable logging of the ‘READY’ state essential for a participant that crashes before the global decision?",
-      "answers": {
-        "a": "So it can vote again in a new transaction",
-        "b": "So it knows to re-send PREPARE on recovery",
-        "c": "So it can query the coordinator for the correct decision upon recovery",
-        "d": "So it commits immediately on restart"
-      },
-      "explanations": {
-        "a": "Incorrect. It does not re-vote for the same transaction.",
-        "b": "Incorrect. PREPARE is sent by the coordinator, not participants.",
-        "c": "Correct. Logging READY tells the participant it must ask for the global outcome.",
-        "d": "Incorrect. It cannot unilaterally commit without hearing the global decision."
-      },
-      "correctAnswer": "c",
-      "difficulty": "intermediate"
-    },
-    {
-      "question": "In the ‘Coordinator Crash’ scenario, what mechanism guarantees all participants eventually see the same decision?",
-      "answers": {
-        "a": "Participants gossip amongst themselves",
-        "b": "Coordinator re-broadcasts its decision on recovery",
-        "c": "Participants abort if they miss any message",
-        "d": "Coordinator logs nothing until every ACK arrives"
-      },
-      "explanations": {
-        "a": "Incorrect. There is no peer-to-peer gossip in basic 2PC.",
-        "b": "Correct. On recovery the coordinator reads its log and re-sends GLOBAL_COMMIT or GLOBAL_ABORT.",
-        "c": "Incorrect. Participants wait for the decision rather than unilaterally aborting.",
-        "d": "Incorrect. The coordinator logs the decision before sending global messages."
-      },
-      "correctAnswer": "b",
-      "difficulty": "advanced"
-    }
-  ]
+    "version": 2.0,
+    "questions": [
+        {
+            "question": "Based on the simulation, what is the default outcome if a participant fails before voting?",
+            "answers": {
+                "a": "The transaction commits.",
+                "b": "The transaction aborts.",
+                "c": "The other participants decide the outcome.",
+                "d": "The system waits indefinitely."
+            },
+            "explanations": {
+                "a": "Incorrect. A missing vote prevents a unanimous commit decision.",
+                "b": "Correct. The coordinator will time out waiting for the failed participant's vote and will issue a `GLOBAL_ABORT`.",
+                "c": "Incorrect. Participants cannot decide on their own.",
+                "d": "Incorrect. Timeouts prevent the system from waiting forever."
+            },
+            "correctAnswer": "b",
+            "difficulty": "beginner"
+        },
+        {
+            "question": "In the simulation, what did you observe when the coordinator failed after sending the `GLOBAL_COMMIT` message but before receiving all `ACK`s?",
+            "answers": {
+                "a": "The transaction was rolled back.",
+                "b": "The participants that sent an ACK remained committed, others aborted.",
+                "c": "Upon recovery, the coordinator re-sends the `GLOBAL_COMMIT` to ensure all participants receive it.",
+                "d": "The participants were blocked forever."
+            },
+            "explanations": {
+                "a": "Incorrect. The decision to commit was already made and logged.",
+                "b": "Incorrect. This would violate atomicity.",
+                "c": "Correct. The coordinator's durable `COMMIT` log entry allows it to resume its task and ensure all participants get the final decision upon recovery.",
+                "d": "Incorrect. Recovery of the coordinator resolves the situation."
+            },
+            "correctAnswer": "c",
+            "difficulty": "beginner"
+        },
+        {
+            "question": "What is the purpose of the `ACK` message sent from participants to the coordinator in Phase 2?",
+            "answers": {
+                "a": "To vote for the transaction.",
+                "b": "To confirm they have received and executed the final decision.",
+                "c": "To request the final decision.",
+                "d": "To tell the coordinator they are ready."
+            },
+            "explanations": {
+                "a": "Incorrect. Voting happens in Phase 1.",
+                "b": "Correct. This lets the coordinator know that the participant has completed its part of the transaction, allowing the coordinator to eventually clean up and forget the transaction.",
+                "c": "Incorrect. The `ACK` is sent after receiving the decision.",
+                "d": "Incorrect. This is done with the `VOTE_COMMIT` message in Phase 1."
+            },
+            "correctAnswer": "b",
+            "difficulty": "beginner"
+        },
+        {
+            "question": "If a network partition separates a participant from the coordinator after the participant has voted `VOTE_COMMIT`, what is the participant's status?",
+            "answers": {
+                "a": "It can safely abort because of the network failure.",
+                "b": "It must remain in the `READY` state, blocked until communication is restored.",
+                "c": "It can ask other participants for the final decision.",
+                "d": "It will automatically commit after a timeout."
+            },
+            "explanations": {
+                "a": "Incorrect. Aborting might violate atomicity if the coordinator decided to commit.",
+                "b": "Correct. This is another example of the blocking nature of 2PC. The participant is uncertain of the outcome and must wait.",
+                "c": "Incorrect. Standard 2PC does not include inter-participant communication.",
+                "d": "Incorrect. Committing might violate atomicity if the coordinator decided to abort."
+            },
+            "correctAnswer": "b",
+            "difficulty": "intermediate"
+        },
+        {
+            "question": "The simulation demonstrates that 2PC guarantees atomicity. What is the primary trade-off for this guarantee?",
+            "answers": {
+                "a": "High network bandwidth usage.",
+                "b": "The potential for participants to become blocked.",
+                "c": "It is very slow even without failures.",
+                "d": "It requires all participants to have identical hardware."
+            },
+            "explanations": {
+                "a": "Incorrect. While it adds messages, bandwidth is not its primary drawback.",
+                "b": "Correct. As seen in coordinator failure scenarios, the strong guarantee of atomicity comes at the cost of availability (liveness), as participants may have to block.",
+                "c": "Incorrect. Its performance is often acceptable in the no-failure case.",
+                "d": "Incorrect. No such requirement exists."
+            },
+            "correctAnswer": "b",
+            "difficulty": "intermediate"
+        },
+        {
+            "question": "Why can't a participant that voted `VOTE_COMMIT` and is now blocked just decide to abort after a timeout?",
+            "answers": {
+                "a": "Because it might be the only participant that wants to abort.",
+                "b": "Because the coordinator might have already decided to commit and informed other participants.",
+                "c": "Because its log is locked in a read-only state.",
+                "d": "Because it is against the rules of the simulation."
+            },
+            "explanations": {
+                "a": "Incorrect. The reason is not about what other participants want, but what the global decision was.",
+                "b": "Correct. If this participant aborts while others commit, the guarantee of atomicity is broken. It cannot risk this inconsistency.",
+                "c": "Incorrect. The log is not locked in this way; the protocol logic prevents the action.",
+                "d": "Incorrect. The simulation follows the actual rules of the 2PC protocol."
+            },
+            "correctAnswer": "b",
+            "difficulty": "intermediate"
+        },
+        {
+            "question": "Consider a scenario not in the simulation: a `GLOBAL_COMMIT` message from the coordinator to one participant is lost. What prevents this participant from being blocked forever?",
+            "answers": {
+                "a": "The participant will eventually time out and abort.",
+                "b": "The coordinator, not receiving an `ACK`, will periodically re-send the `GLOBAL_COMMIT`.",
+                "c": "The participant can infer a commit from the silence.",
+                "d": "The other participants will detect the issue and re-send the message."
+            },
+            "explanations": {
+                "a": "Incorrect. Unilaterally aborting would be a violation of the protocol.",
+                "b": "Correct. The `ACK` mechanism is used by the coordinator to track which participants have completed the transaction. A missing `ACK` implies the participant may not have received or processed the decision, so the coordinator retransmits.",
+                "c": "Incorrect. Silence does not imply commit.",
+                "d": "Incorrect. Participants do not communicate with each other."
+            },
+            "correctAnswer": "b",
+            "difficulty": "advanced"
+        },
+        {
+            "question": "If the simulation used a non-blocking protocol like 3PC, what would a participant do if the coordinator crashed after the 'pre-commit' phase?",
+            "answers": {
+                "a": "It would still be blocked, just like in 2PC.",
+                "b": "It would contact the other participants to elect a new coordinator and safely decide to commit.",
+                "c": "It would automatically abort.",
+                "d": "It would wait for the original coordinator to recover."
+            },
+            "explanations": {
+                "a": "Incorrect. The purpose of 3PC is to avoid this blocking.",
+                "b": "Correct. The 'pre-commit' state in 3PC is designed so that if any participant is in that state, all others are at least in the `READY` state, making it safe to proceed with a commit decision even if the coordinator fails. This often involves a recovery protocol where participants can communicate. For more details, see <a href='https://en.wikipedia.org/wiki/Three-phase_commit_protocol' target='_blank'>here</a>.",
+                "c": "Incorrect. It is safe to commit at this point.",
+                "d": "Incorrect. It does not need to wait for the original coordinator."
+            },
+            "correctAnswer": "b",
+            "difficulty": "advanced"
+        },
+        {
+            "question": "The simulation shows that the coordinator is a single point of failure. In a real-world, high-availability system, how is this typically addressed?",
+            "answers": {
+                "a": "By using a much more powerful computer for the coordinator.",
+                "b": "By having a backup coordinator that is manually promoted in case of failure.",
+                "c": "By using a consensus algorithm like Paxos or Raft to create a replicated, fault-tolerant coordinator service.",
+                "d": "By eliminating the coordinator and using a fully decentralized protocol."
+            },
+            "explanations": {
+                "a": "Incorrect. A more powerful computer can still fail.",
+                "b": "Incorrect. Manual promotion can be slow and error-prone, leaving the system blocked for a long time.",
+                "c": "Correct. Modern distributed databases often use a replicated log (managed by a consensus algorithm) to represent the coordinator's state, so if one coordinator replica fails, another can take over immediately without loss of information.",
+                "d": "Incorrect. While fully decentralized protocols exist, they are not typically how 2PC itself is made fault-tolerant; rather, its coordinator is."
+            },
+            "correctAnswer": "c",
+            "difficulty": "advanced"
+        }
+    ]
 }

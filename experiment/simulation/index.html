@@ -1,72 +1,184 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Two-Phase Commit Simulator</title>
-	<link rel="stylesheet" href="./css/main.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2-Phase Commit Protocol Simulation</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div id="app">
-    <!-- Control Panel -->
-    <div id="control-panel">
-      <h2>Controls</h2>
-      <button id="startBtn">Start Transaction</button>
-      <button id="resetBtn">Reset Simulation</button>
+    <div class="app-container">
+        <header class="header">
+            <h1>
+                2-Phase Commit Protocol
+                <div class="status-indicator"></div>
+            </h1>
+            <div style="font-size: 0.9em; opacity: 0.9;">
+                Distributed Transaction Simulation
+            </div>
+        </header>
 
-      <div class="control-group">
-        <label for="voteTimeout">Vote Timeout (ms)</label>
-        <input type="range" id="voteTimeout" min="500" max="10000" step="500" value="5000" />
-        <span id="voteTimeoutVal">5000</span>
-      </div>
+        <div class="controls-panel">
+            <div class="control-section">
+                <h3>Transaction Configuration</h3>
+                <div class="input-group">
+                    <label>Number of Participants</label>
+                    <select id="participantCount">
+                        <option value="3">3 Participants</option>
+                        <option value="4">4 Participants</option>
+                        <option value="5">5 Participants</option>
+                        <option value="6">6 Participants</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Failure Scenario</label>
+                    <select id="failureMode">
+                        <option value="none">No Failures</option>
+                        <option value="coordinator_phase1">Coordinator Fails (Phase 1)</option>
+                        <option value="coordinator_phase2">Coordinator Fails (Phase 2)</option>
+                        <option value="participant_phase1">Participant Fails (Phase 1)</option>
+                        <option value="participant_phase2">Participant Fails (Phase 2)</option>
+                        <option value="network_partition">Network Partition</option>
+                        <option value="timeout">Transaction Timeout</option>
+                    </select>
+                </div>
+            </div>
 
-      <div class="control-group">
-        <label for="decisionTimeout">Decision Timeout (ms)</label>
-        <input type="range" id="decisionTimeout" min="500" max="10000" step="500" value="5000" />
-        <span id="decisionTimeoutVal">5000</span>
-      </div>
+            <div class="control-section">
+                <h3>Actions & Controls</h3>
+                <div class="input-group">
+                    <label>Animation Speed</label>
+                    <div class="control-row">
+                        <input type="range" id="animationSpeed" min="0.25" max="3" step="0.25" value="1" style="flex: 1; height: 8px; background: #e2e8f0; border-radius: 4px; outline: none; -webkit-appearance: none; appearance: none; cursor: pointer;">
+                        <div id="speedValue" style="min-width: 40px; text-align: center; color: #1e40af; font-weight: 600; font-size: 0.9rem; background: white; border-radius: 6px; padding: 4px 8px; border: 1px solid #e2e8f0;">1x</div>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label>Simulation Mode</label>
+                    <select id="simulationMode">
+                        <option value="manual">Step-by-step (Manual)</option>
+                        <option value="automatic">Automatic</option>
+                    </select>
+                </div>
 
-      <!-- <div class="control-group"> -->
-        <!-- <label for="clockSpeed">Clock Speed</label> -->
-        <!-- <select id="clockSpeed"> -->
-          <!-- <option value="1">1x</option> -->
-          <!-- <option value="0.5">0.5x</option> -->
-          <!-- <option value="0.25">0.25x</option> -->
-        <!-- </select> -->
-      <!-- </div> -->
+                <!-- Manual Controls -->
+                <div id="manualControls">
+                    <button id="nextStepBtn" class="btn btn-primary">➡️ Next Step</button>
+                </div>
 
-      <div class="control-group">
-        <label for="scenario">Scenario</label>
-        <select id="scenario">
-          <option value="0" data-goal="" data-allowed="" data-task="">No target</option>
-          <option value="1" data-goal="Force global ABORT by crashing one participant before it votes." data-allowed="1x participant crash" data-task="Crash exactly one participant (e.g. P₂) after C's PREPARE but before P₂ sends VOTE_COMMIT. Watch C timeout → GLOBAL_ABORT.">Single Participant Crash</option>
-          <option value="2" data-goal="Force ABORT by dropping a vote." data-allowed="1x link-down (vote path)" data-task="Break the link between C and one participant after PREPARE so that that P’s VOTE_COMMIT is lost. C must abort." disabled>Dropped Vote Message</option>
-          <!-- <option value="3" data-goal="Force ABORT by crashing C." data-allowed="1x coordinator crash" data-task="Crash C immediately after sending PREPARE but before ANY vote arrives. Upon C’s recovery (or timeout), verify GLOBAL_ABORT." disabled>Coordinator Crash Pre-Vote</option> -->
-        </select>
-      </div>
-      <div id="scenario-panel">
-        <div id="scenario-goal"></div>
-        <div id="scenario-allowed"></div>
-        <div id="scenario-task"></div>
-      </div>
+                <!-- Automatic Controls -->
+                <div id="automaticControls" style="display: none;">
+                    <button id="runAutoBtn" class="btn btn-secondary">▶️ Run Simulation</button>
+                </div>
+                
+                <button id="resetSimulation" class="btn btn-danger">🔄 Reset Simulation</button>
+            </div>
+        </div>
+
+        <div class="experiment-area">
+            <div class="simulation-area">
+                <div class="legend-panel">
+                    <h4>Legend</h4>
+                    <div class="legend-items">
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: linear-gradient(135deg, #3182ce, #2c5282);"></div>
+                            <span>Coordinator</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: linear-gradient(135deg, #63b3ed, #4299e1);"></div>
+                            <span>Participant (Ready)</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: linear-gradient(135deg, #48bb78, #38a169);"></div>
+                            <span>Voted Yes</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: linear-gradient(135deg, #ed8936, #dd6b20);"></div>
+                            <span>Voted No</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: linear-gradient(135deg, #f56565, #e53e3e);"></div>
+                            <span>Failed Node</span>
+                        </div>
+                    </div>
+                </div>
+                <div id="phaseIndicator" class="phase-indicator">Ready</div>
+                <div class="coordinator" id="coordinator">
+                    Coordinator
+                </div>
+                <div class="participants" id="participants"></div>
+                <div class="message-lines" id="messageLines"></div>
+                <div class="failure-overlay" id="failureOverlay">
+                    System Failure Detected!
+                </div>
+            </div>
+        </div>
+
+        <div class="observations-panel">
+            <div class="status-section">
+                <h4>Transaction Log</h4>
+                <div class="logs" id="logContainer">
+                    <div class="log-entry info">[System] 2-Phase Commit Protocol initialized</div>
+                    <div class="log-entry info">[Info] Click 'Start Transaction' to begin distributed transaction</div>
+                </div>
+            </div>
+
+            <div class="status-section">
+                <h4>Process State</h4>
+                <div class="process-state-container">
+                    <div class="process-node">
+                        <div class="process-node-header">
+                            <span class="process-node-icon">🎯</span>
+                            <span class="process-node-name">Coordinator</span>
+                            <span class="process-status-badge" id="coordinatorStatus">Ready</span>
+                        </div>
+                        <div class="process-node-details" id="coordinatorDetails">
+                            <div class="detail-item">State: <span class="detail-value">Idle</span></div>
+                        </div>
+                    </div>
+                    <div class="participants-state" id="participantsState">
+                        <!-- Participant states will be dynamically added here -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="status-section">
+                <h4>Transaction Statistics</h4>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="successCount">0</div>
+                        <div class="stat-label">Successful Commits</div>
+                        <div class="stat-description">Transactions completed</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="abortCount">0</div>
+                        <div class="stat-label">Aborted Transactions</div>
+                        <div class="stat-description">Transactions rolled back</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="failureCount">0</div>
+                        <div class="stat-label">System Failures</div>
+                        <div class="stat-description">Node/network failures</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalTransactions">0</div>
+                        <div class="stat-label">Total Transactions</div>
+                        <div class="stat-description">All attempts</div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <!-- Canvas -->
-    <div id="canvas-container">
-      <canvas id="simCanvas" width="800" height="600"></canvas>
+    <div class="tooltip" id="tooltip"></div>
+
+    <!-- Mobile Portrait Orientation Overlay -->
+    <div class="rotate-device-overlay">
+        <div class="rotate-icon">📱➡️📲</div>
+        <h2>Please Rotate Your Device</h2>
+        <p>For the best experience, please rotate your device to landscape mode to view this distributed systems simulation.</p>
     </div>
 
-    <!-- State & Log Panel -->
-    <div id="log-panel">
-      <h2>State & Log</h2>
-      <div id="state-panel">
-        <!-- Dynamically populated node states -->
-      </div>
-      <pre id="log-output"></pre>
-    </div>
-  </div>
-
-  <!-- Simulation Script -->
-  <script src="./js/main.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
