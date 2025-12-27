@@ -770,11 +770,111 @@
             box-shadow: 0 2px 8px rgba(59, 130, 246, 0.4);
         }
 
-        /* Mobile Landscape Support - Phones */
-        @media screen and (max-width: 768px) and (orientation: landscape) {
+        /* Mobile Tab Navigation */
+        .mobile-tab-nav {
+            display: none;
+            background: white;
+            border-radius: 12px;
+            padding: 8px;
+            gap: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .mobile-tab-btn {
+            flex: 1;
+            padding: 10px 12px;
+            border: none;
+            border-radius: 8px;
+            background: #f1f5f9;
+            color: #64748b;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .mobile-tab-btn.active {
+            background: linear-gradient(135deg, #3b82f6, #1e40af);
+            color: white;
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.4);
+        }
+
+        .mobile-tab-btn:hover:not(.active) {
+            background: #e2e8f0;
+        }
+
+        /* Tablet Landscape (769px - 1200px) */
+        @media screen and (min-width: 769px) and (max-width: 1200px) {
             .app-container {
                 grid-template-columns: 280px 1fr 300px;
-                grid-template-rows: 60px 1fr;
+                grid-template-rows: 70px 1fr;
+                gap: 12px;
+                padding: 12px;
+            }
+
+            .header h1 {
+                font-size: 1.6em;
+            }
+
+            .controls-panel {
+                height: calc(100vh - 94px);
+                padding: 15px;
+                gap: 15px;
+            }
+
+            .experiment-area {
+                height: calc(100vh - 94px);
+            }
+
+            .simulation-area {
+                padding: 15px;
+                min-height: 400px;
+            }
+
+            .coordinator {
+                width: 100px;
+                height: 100px;
+                font-size: 0.8rem;
+            }
+
+            .participant {
+                width: 70px;
+                height: 70px;
+                font-size: 0.7rem;
+            }
+
+            .observations-panel {
+                height: calc(100vh - 94px);
+                padding: 15px;
+            }
+
+            .logs {
+                height: 200px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .input-group {
+                padding: 12px;
+                margin-bottom: 15px;
+            }
+
+            .control-section {
+                padding: 15px;
+            }
+        }
+
+        /* Small Tablets and Large Phones Landscape */
+        @media screen and (max-width: 768px) and (orientation: landscape) {
+            .app-container {
+                grid-template-columns: 220px 1fr 240px;
+                grid-template-rows: 50px 1fr;
                 height: 100vh;
                 gap: 8px;
                 padding: 8px;
@@ -783,80 +883,266 @@
 
             .header {
                 grid-column: 1 / -1;
-                padding: 0 15px;
+                padding: 0 12px;
             }
 
             .header h1 {
-                font-size: 1.4em;
+                font-size: 1.2em;
+            }
+
+            .header > div:last-child {
+                display: none;
             }
 
             .controls-panel {
-                height: calc(100vh - 76px);
-                padding: 15px;
-                gap: 15px;
+                height: calc(100vh - 66px);
+                padding: 10px;
+                gap: 10px;
             }
 
             .control-section {
-                padding: 15px;
+                padding: 10px;
             }
 
             .control-section h3 {
-                font-size: 1em;
-                margin-bottom: 12px;
+                font-size: 0.85em;
+                margin-bottom: 8px;
             }
 
             .input-group {
-                padding: 12px;
-                margin-bottom: 15px;
+                padding: 8px;
+                margin-bottom: 10px;
+            }
+
+            .input-group label {
+                font-size: 0.75rem;
+                margin-bottom: 5px;
             }
 
             .btn {
-                padding: 10px 12px;
-                font-size: 0.8rem;
-                margin-bottom: 6px;
+                padding: 8px 10px;
+                font-size: 0.75rem;
+                margin-bottom: 5px;
             }
 
             select {
-                padding: 8px 10px;
-                font-size: 0.85rem;
+                padding: 6px 8px;
+                font-size: 0.8rem;
             }
 
             .experiment-area {
-                height: calc(100vh - 76px);
+                height: calc(100vh - 66px);
+            }
+
+            .simulation-area {
+                padding: 10px;
+                min-height: 250px;
+            }
+
+            .coordinator {
+                width: 60px;
+                height: 60px;
+                font-size: 0.6rem;
+                border-width: 2px;
+            }
+
+            .participant {
+                width: 45px;
+                height: 45px;
+                font-size: 0.55rem;
+                border-width: 2px;
+            }
+
+            .legend-panel {
+                padding: 8px;
+                min-width: 120px;
+                top: 10px;
+                right: 10px;
+            }
+
+            .legend-panel h4 {
+                font-size: 0.7rem;
+                margin-bottom: 6px;
+            }
+
+            .legend-item {
+                font-size: 0.6rem;
+                gap: 5px;
+            }
+
+            .legend-color {
+                width: 8px;
+                height: 8px;
+            }
+
+            .phase-indicator {
+                font-size: 0.7rem;
+                padding: 6px 10px;
+                top: 10px;
+                left: 10px;
+            }
+
+            .message {
+                font-size: 0.55rem;
+                padding: 3px 6px;
+            }
+
+            .observations-panel {
+                height: calc(100vh - 66px);
+                padding: 10px;
+                gap: 8px;
+            }
+
+            .status-section {
+                padding: 10px;
+            }
+
+            .status-section h4 {
+                font-size: 0.8rem;
+                margin-bottom: 8px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 6px;
+            }
+
+            .stat-card {
+                padding: 8px;
+            }
+
+            .stat-value {
+                font-size: 1rem;
+            }
+
+            .stat-label {
+                font-size: 0.6rem;
+            }
+
+            .stat-description {
+                display: none;
+            }
+
+            .logs {
+                height: 120px;
+                font-size: 0.65rem;
+                padding: 8px;
+            }
+
+            .log-entry {
+                padding: 3px 6px;
+                font-size: 0.6rem;
+            }
+
+            .process-state-container {
+                display: none;
+            }
+        }
+
+        /* Tablet Portrait Mode */
+        @media screen and (max-width: 768px) and (orientation: portrait) {
+            body {
+                overflow: auto;
+            }
+
+            .app-container {
+                display: flex;
+                flex-direction: column;
+                height: auto;
+                min-height: 100vh;
+                gap: 10px;
+                padding: 10px;
+                border-radius: 0;
+            }
+
+            .header {
+                flex-shrink: 0;
+                padding: 12px 15px;
+                border-radius: 12px;
+            }
+
+            .header h1 {
+                font-size: 1.3em;
+            }
+
+            .header > div:last-child {
+                font-size: 0.75em;
+            }
+
+            .mobile-tab-nav {
+                display: flex;
+                flex-shrink: 0;
+            }
+
+            .controls-panel,
+            .observations-panel {
+                display: none;
+                height: auto;
+                max-height: none;
+                overflow: visible;
+            }
+
+            .controls-panel.active,
+            .observations-panel.active {
+                display: flex;
+            }
+
+            .experiment-area {
+                min-height: 350px;
+                height: 350px;
+                flex-shrink: 0;
+                border-radius: 12px;
+            }
+
+            .experiment-area.active {
+                display: flex;
+            }
+
+            .experiment-area:not(.active) {
+                display: none;
             }
 
             .simulation-area {
                 padding: 15px;
-                min-height: 350px;
+                min-height: 320px;
             }
 
             .coordinator {
                 width: 80px;
                 height: 80px;
                 font-size: 0.7rem;
+                border-width: 3px;
             }
 
             .participant {
-                width: 60px;
-                height: 60px;
-                font-size: 0.65rem;
+                width: 55px;
+                height: 55px;
+                font-size: 0.6rem;
+                border-width: 2px;
             }
 
             .legend-panel {
-                padding: 10px;
-                min-width: 140px;
-                font-size: 0.75rem;
-                top: 15px;
-                right: 15px;
+                position: absolute;
+                top: 10px;
+                right: 10px;
+                padding: 8px 10px;
+                min-width: auto;
+                border-radius: 8px;
             }
 
             .legend-panel h4 {
-                font-size: 0.8rem;
-                margin-bottom: 8px;
+                font-size: 0.75rem;
+                margin-bottom: 6px;
+            }
+
+            .legend-items {
+                display: flex;
+                flex-direction: column;
+                gap: 4px;
             }
 
             .legend-item {
-                font-size: 0.7rem;
+                font-size: 0.65rem;
                 gap: 6px;
             }
 
@@ -866,21 +1152,33 @@
             }
 
             .phase-indicator {
-                font-size: 0.8rem;
+                font-size: 0.75rem;
                 padding: 8px 12px;
-                top: 15px;
-                left: 15px;
+                top: 10px;
+                left: 10px;
             }
 
             .message {
-                font-size: 0.65rem;
+                font-size: 0.6rem;
                 padding: 4px 8px;
             }
 
-            .observations-panel {
-                height: calc(100vh - 76px);
+            .control-section {
                 padding: 15px;
-                gap: 12px;
+            }
+
+            .control-section h3 {
+                font-size: 1rem;
+            }
+
+            .input-group {
+                padding: 12px;
+                margin-bottom: 12px;
+            }
+
+            .btn {
+                padding: 12px;
+                font-size: 0.85rem;
             }
 
             .status-section {
@@ -888,21 +1186,20 @@
             }
 
             .status-section h4 {
-                font-size: 0.9rem;
-                margin-bottom: 10px;
+                font-size: 0.95rem;
             }
 
             .stats-grid {
-                grid-template-columns: 1fr 1fr;
-                gap: 8px;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
             }
 
             .stat-card {
-                padding: 10px;
+                padding: 12px;
             }
 
             .stat-value {
-                font-size: 1.1rem;
+                font-size: 1.2rem;
             }
 
             .stat-label {
@@ -915,197 +1212,200 @@
 
             .logs {
                 height: 200px;
-                font-size: 0.7rem;
-                padding: 10px;
+                font-size: 0.75rem;
             }
 
             .log-entry {
-                padding: 4px 8px;
-                font-size: 0.65rem;
-            }
-
-            .tooltip {
+                padding: 5px 8px;
                 font-size: 0.7rem;
-                padding: 4px 8px;
-            }
-        }
-
-        /* Mobile Landscape Support - Tablets */
-        @media screen and (min-width: 769px) and (max-width: 1024px) and (orientation: landscape) {
-            .app-container {
-                grid-template-columns: 300px 1fr 320px;
-                grid-template-rows: 70px 1fr;
-                gap: 12px;
-                padding: 12px;
             }
 
-            .header h1 {
-                font-size: 1.6em;
-            }
-
-            .controls-panel {
-                height: calc(100vh - 94px);
-                padding: 18px;
-            }
-
-            .experiment-area {
-                height: calc(100vh - 94px);
-            }
-
-            .simulation-area {
-                padding: 18px;
-                min-height: 400px;
-            }
-
-            .coordinator {
-                width: 100px;
-                height: 100px;
-                font-size: 0.8rem;
-            }
-
-            .participant {
-                width: 75px;
-                height: 75px;
-                font-size: 0.75rem;
-            }
-
-            .observations-panel {
-                height: calc(100vh - 94px);
-                padding: 18px;
-            }
-
-            .logs {
-                height: 250px;
-            }
-
-            .stats-grid {
-                grid-template-columns: 1fr 1fr;
-            }
-        }
-
-        @media (max-width: 1200px) {
-            .app-container {
-                grid-template-columns: 1fr;
-                grid-template-rows: 80px 1fr auto auto;
-                height: 100vh;
-                gap: 10px;
+            .process-node {
                 padding: 10px;
             }
-            
-            .controls-panel {
-                height: 300px;
-                order: 2;
+
+            .process-node-name {
+                font-size: 0.85rem;
             }
-            
-            .experiment-area {
-                order: 1;
-                min-height: 400px;
+
+            .process-status-badge {
+                font-size: 0.6rem;
+                padding: 3px 8px;
             }
-            
-            .observations-panel {
-                height: 250px;
-                order: 3;
+
+            .participants-state {
+                max-height: 200px;
             }
         }
-        
-        @media (max-width: 768px) {
-            .header h1 {
-                font-size: 1.5em;
-            }
-            
-            .participants {
-                gap: 40px;
-            }
-            
-            .participant {
-                width: 75px;
-                height: 75px;
-                font-size: 0.75rem;
-            }
-            
-            .coordinator {
-                width: 100px;
-                height: 100px;
-                font-size: 0.8rem;
-            }
 
-            .legend-panel {
-                position: relative;
-                top: auto;
-                left: auto;
-                margin-bottom: 15px;
-                min-width: auto;
-                width: 100%;
-            }
-
-            .legend-items {
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                gap: 6px;
-            }
-
-            .legend-item {
-                font-size: 0.75rem;
+        /* Small Mobile Portrait */
+        @media screen and (max-width: 480px) and (orientation: portrait) {
+            .app-container {
+                padding: 8px;
                 gap: 8px;
             }
 
+            .header {
+                padding: 10px 12px;
+            }
+
+            .header h1 {
+                font-size: 1.1em;
+            }
+
+            .header > div:last-child {
+                display: none;
+            }
+
+            .mobile-tab-btn {
+                padding: 8px 6px;
+                font-size: 0.7rem;
+            }
+
+            .mobile-tab-btn span.tab-text {
+                display: none;
+            }
+
+            .experiment-area {
+                min-height: 300px;
+                height: 300px;
+            }
+
+            .simulation-area {
+                padding: 10px;
+                min-height: 280px;
+            }
+
+            .coordinator {
+                width: 65px;
+                height: 65px;
+                font-size: 0.6rem;
+            }
+
+            .participant {
+                width: 45px;
+                height: 45px;
+                font-size: 0.55rem;
+            }
+
+            .legend-panel {
+                padding: 6px 8px;
+            }
+
+            .legend-panel h4 {
+                font-size: 0.65rem;
+                margin-bottom: 4px;
+            }
+
+            .legend-item {
+                font-size: 0.55rem;
+                gap: 4px;
+            }
+
             .legend-color {
-                width: 12px;
-                height: 12px;
+                width: 8px;
+                height: 8px;
+            }
+
+            .phase-indicator {
+                font-size: 0.65rem;
+                padding: 6px 10px;
+            }
+
+            .control-section {
+                padding: 12px;
+            }
+
+            .control-section h3 {
+                font-size: 0.9rem;
+            }
+
+            .input-group {
+                padding: 10px;
+                margin-bottom: 10px;
+            }
+
+            .input-group label {
+                font-size: 0.8rem;
+            }
+
+            .btn {
+                padding: 10px;
+                font-size: 0.8rem;
+            }
+
+            select {
+                padding: 8px 10px;
+                font-size: 0.85rem;
+            }
+
+            .status-section {
+                padding: 10px;
+            }
+
+            .status-section h4 {
+                font-size: 0.85rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 8px;
+            }
+
+            .stat-card {
+                padding: 10px;
+            }
+
+            .stat-value {
+                font-size: 1rem;
+            }
+
+            .stat-label {
+                font-size: 0.6rem;
+            }
+
+            .stat-description {
+                display: none;
+            }
+
+            .logs {
+                height: 150px;
+                font-size: 0.7rem;
+            }
+
+            .log-entry {
+                padding: 4px 6px;
+                font-size: 0.65rem;
+            }
+
+            .process-state-container {
+                gap: 8px;
+            }
+
+            .process-node {
+                padding: 8px;
+            }
+
+            .process-node-header {
+                gap: 6px;
+            }
+
+            .process-node-icon {
+                font-size: 1em;
+            }
+
+            .process-node-name {
+                font-size: 0.8rem;
+            }
+
+            .participants-state {
+                max-height: 150px;
             }
         }
-        
-        /* Mobile Portrait Orientation Overlay */
+
+        /* Hide rotate overlay - we now support portrait */
         .rotate-device-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            z-index: 10000;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            text-align: center;
-            padding: 20px;
-        }
-
-        .rotate-device-overlay .rotate-icon {
-            font-size: 4rem;
-            margin-bottom: 20px;
-            animation: rotateAnimation 2s ease-in-out infinite;
-        }
-
-        .rotate-device-overlay h2 {
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin-bottom: 15px;
-        }
-
-        .rotate-device-overlay p {
-            font-size: 1rem;
-            opacity: 0.9;
-            line-height: 1.5;
-            max-width: 300px;
-        }
-
-        @keyframes rotateAnimation {
-            0%, 100% { transform: rotate(0deg); }
-            25% { transform: rotate(-15deg); }
-            75% { transform: rotate(15deg); }
-        }
-
-        @media screen and (max-width: 768px) and (orientation: portrait) {
-            .rotate-device-overlay {
-                display: flex !important;
-            }
-            
-            .app-container {
-                display: none !important;
-            }
+            display: none !important;
         }
 
         .process-state-container {
