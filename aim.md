@@ -1,0 +1,1 @@
+To understand the functionality of the Two-Phase Commit (2PC) protocol in distributed systems. This experiment simulates various scenarios, including normal operation and different failure modes, to demonstrate how 2PC ensures atomicity and consistency across multiple participants in a distributed transaction.
