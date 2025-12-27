@@ -18,7 +18,20 @@
             </div>
         </header>
 
-        <div class="controls-panel">
+        <!-- Mobile Tab Navigation -->
+        <nav class="mobile-tab-nav" id="mobileTabNav">
+            <button class="mobile-tab-btn" data-tab="controls">
+                ⚙️ <span class="tab-text">Controls</span>
+            </button>
+            <button class="mobile-tab-btn active" data-tab="simulation">
+                🎯 <span class="tab-text">Simulation</span>
+            </button>
+            <button class="mobile-tab-btn" data-tab="observations">
+                📊 <span class="tab-text">Logs</span>
+            </button>
+        </nav>
+
+        <div class="controls-panel" id="controlsPanel">
             <div class="control-section">
                 <h3>Transaction Configuration</h3>
                 <div class="input-group">
@@ -75,7 +88,7 @@
             </div>
         </div>
 
-        <div class="experiment-area">
+        <div class="experiment-area active" id="experimentArea">
             <div class="simulation-area">
                 <div class="legend-panel">
                     <h4>Legend</h4>
@@ -114,7 +127,7 @@
             </div>
         </div>
 
-        <div class="observations-panel">
+        <div class="observations-panel" id="observationsPanel">
             <div class="status-section">
                 <h4>Transaction Log</h4>
                 <div class="logs" id="logContainer">
