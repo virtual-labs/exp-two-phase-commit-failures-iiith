@@ -118,13 +118,20 @@ class TwoPhaseCommitSimulation {
         return descriptions[status] || 'Unknown state';
     }
 
+    getResponsiveRadius() {
+        const width = window.innerWidth;
+        if (width <= 480) return 32;
+        if (width <= 768) return 34;
+        return 35;
+    }
+
     createParticipants() {
         this.participantsContainer.innerHTML = '';
         this.participants = [];
         
         const centerX = 50;
         const centerY = 50;
-        const radius = 35;
+        const radius = this.getResponsiveRadius();
         
         for (let i = 0; i < this.participantCount; i++) {
             const participant = document.createElement('div');
@@ -141,6 +148,14 @@ class TwoPhaseCommitSimulation {
             participant.style.left = `${x}%`;
             participant.style.top = `${y}%`;
             participant.style.transform = 'translate(-50%, -50%)';
+            
+            // Touch support for mobile
+            participant.addEventListener('touchstart', (e) => {
+                const status = participant.dataset.status || 'ready';
+                const tooltipText = `Participant ${i + 1}\nStatus: ${status}\nState: ${this.getParticipantStateDescription(status)}`;
+                this.showTooltip(e.touches[0], tooltipText);
+            });
+            participant.addEventListener('touchend', () => this.hideTooltip());
             
             participant.addEventListener('mouseenter', (e) => {
                 const status = participant.dataset.status || 'ready';
@@ -160,8 +175,10 @@ class TwoPhaseCommitSimulation {
 
     showTooltip(event, text) {
         this.tooltip.innerHTML = text.replace(/\n/g, '<br>');
-        this.tooltip.style.left = event.pageX + 10 + 'px';
-        this.tooltip.style.top = event.pageY - 30 + 'px';
+        const x = event.pageX || event.clientX;
+        const y = event.pageY || event.clientY;
+        this.tooltip.style.left = x + 10 + 'px';
+        this.tooltip.style.top = y - 30 + 'px';
         this.tooltip.classList.add('show');
     }
 
@@ -787,22 +804,86 @@ class TwoPhaseCommitSimulation {
     }
 }
 
-function checkOrientation() {
-    const overlay = document.querySelector('.rotate-device-overlay');
-    if (window.innerWidth <= 768 && window.innerHeight > window.innerWidth) {
-        overlay.style.display = 'flex';
-        document.querySelector('.app-container').style.display = 'none';
+// Mobile Tab Navigation
+function initMobileTabNavigation() {
+    const tabNav = document.getElementById('mobileTabNav');
+    const controlsPanel = document.getElementById('controlsPanel');
+    const experimentArea = document.getElementById('experimentArea');
+    const observationsPanel = document.getElementById('observationsPanel');
+    
+    if (!tabNav) return;
+    
+    const tabButtons = tabNav.querySelectorAll('.mobile-tab-btn');
+    
+    tabButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const tab = btn.dataset.tab;
+            
+            // Update button states
+            tabButtons.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            // Update panel visibility
+            controlsPanel.classList.remove('active');
+            experimentArea.classList.remove('active');
+            observationsPanel.classList.remove('active');
+            
+            switch(tab) {
+                case 'controls':
+                    controlsPanel.classList.add('active');
+                    break;
+                case 'simulation':
+                    experimentArea.classList.add('active');
+                    break;
+                case 'observations':
+                    observationsPanel.classList.add('active');
+                    break;
+            }
+        });
+    });
+}
+
+// Handle responsive layout changes
+function handleResponsiveLayout() {
+    const isPortraitMobile = window.innerWidth <= 768 && window.innerHeight > window.innerWidth;
+    const tabNav = document.getElementById('mobileTabNav');
+    const controlsPanel = document.getElementById('controlsPanel');
+    const experimentArea = document.getElementById('experimentArea');
+    const observationsPanel = document.getElementById('observationsPanel');
+    
+    if (isPortraitMobile) {
+        // Mobile portrait mode - use tabs
+        if (tabNav) tabNav.style.display = 'flex';
+        
+        // Reset to simulation tab by default when switching to mobile
+        const activeTab = tabNav?.querySelector('.mobile-tab-btn.active');
+        if (activeTab) {
+            const tab = activeTab.dataset.tab;
+            controlsPanel.classList.toggle('active', tab === 'controls');
+            experimentArea.classList.toggle('active', tab === 'simulation');
+            observationsPanel.classList.toggle('active', tab === 'observations');
+        } else {
+            // Default to simulation view
+            controlsPanel.classList.remove('active');
+            experimentArea.classList.add('active');
+            observationsPanel.classList.remove('active');
+        }
     } else {
-        overlay.style.display = 'none';
-        document.querySelector('.app-container').style.display = 'grid';
+        // Desktop/tablet landscape mode - show all panels
+        if (tabNav) tabNav.style.display = 'none';
+        controlsPanel.classList.remove('active');
+        experimentArea.classList.remove('active');
+        observationsPanel.classList.remove('active');
     }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
     new TwoPhaseCommitSimulation();
-    checkOrientation();
-    window.addEventListener('resize', checkOrientation);
+    initMobileTabNavigation();
+    handleResponsiveLayout();
+    
+    window.addEventListener('resize', handleResponsiveLayout);
     window.addEventListener('orientationchange', () => {
-        setTimeout(checkOrientation, 100);
+        setTimeout(handleResponsiveLayout, 100);
     });
 });
